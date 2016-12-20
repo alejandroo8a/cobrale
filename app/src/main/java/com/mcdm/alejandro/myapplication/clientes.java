@@ -11,12 +11,15 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AlertDialog;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -42,6 +45,7 @@ public class clientes extends Fragment {
     private ImageView imgClientes;
     private ListView lsClientes;
     private SQLCobrale db;
+    private EditText edtBuscarCliente;
 
     private ArrayAdapter adaptador;
     private OnFragmentInteractionListener mListener;
@@ -61,6 +65,7 @@ public class clientes extends Fragment {
         txtCliente = (TextView)view.findViewById(R.id.txtCliente);
         imgClientes = (ImageView)view.findViewById(R.id.imgClientes);
         lsClientes = (ListView)view.findViewById(R.id.lsClientes);
+        edtBuscarCliente = (EditText)view.findViewById(R.id.edtBuscarCliente);
         return view;
     }
 
@@ -142,6 +147,25 @@ public class clientes extends Fragment {
                         })
                         .show();
                 return true;
+            }
+        });
+
+        edtBuscarCliente.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                //clientes.this.adaptador.getFilter().filter(charSequence);
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                adaptador.getFilter().filter(charSequence);
+
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+
             }
         });
     }
