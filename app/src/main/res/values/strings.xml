@@ -1,0 +1,44 @@
+<resources>
+    <string name="app_name">Cobrale</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="nombre">Nombre</string>
+    <string name="direccion">Direccion</string>
+    <string name="tel1">Telefono</string>
+    <string name="tel2">Telefono 2</string>
+    <string name="guardar">Guardar</string>
+    <string name="colonia">Colonia</string>
+    <string name="calle">Calle</string>
+    <string name="celular">Celular</string>
+    <string name="telefono_casa">Teléfono casa</string>
+    <string name="raz_n_social">Razón social:</string>
+
+
+    <!-- Conjunto de Strings para el View GameSpinner -->
+    <string-array name="Plazo">
+        <item>1 Semana </item>
+        <item>2 Semanas</item>
+        <item>3 Semanas</item>
+        <item>1 Mes</item>
+        <item>Al contado </item>
+    </string-array>
+
+
+    <string-array name="Ropa">
+        <item>Blusa </item>
+        <item>Pantalon </item>
+        <item>Falda</item>
+        <item>Vestido</item>
+    </string-array>
+
+    <string-array name="Semana">
+        <item>Lunes </item>
+        <item>Martes </item>
+        <item>Miercoles</item>
+        <item>Jueves</item>
+        <item>Viernes</item>
+        <item>Sábado</item>
+        <item>Domingo</item>
+    </string-array>
+</resources>

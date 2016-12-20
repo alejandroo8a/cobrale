@@ -1,0 +1,76 @@
+package com.mcdm.alejandro.myapplication.clases;
+
+/**
+ * Created by alejandro on 8/12/16.
+ */
+
+public class pagos {
+
+    private double monto;
+    private double resto;//LO QUE EL CLIENTE PAGARÁ
+    private double total;
+    private String fechaCobro;//ES CUANDO SE SUPONE QUE EL CLIENTE DEBE DE PAGAR
+    private String fechaPago;//CUANDL EL CLIENTE REALIZA EL PAGO
+    private boolean sincronizado;
+
+    public pagos(){
+
+    }
+
+    public pagos(double monto, double resto, double total, String fechaCobro, String fechaPago, boolean sincronizado) {
+        this.monto = monto;
+        this.resto = resto;
+        this.total = total;
+        this.fechaCobro = fechaCobro;
+        this.fechaPago = fechaPago;
+        this.sincronizado = sincronizado;
+    }
+
+    public double getMonto() {
+        return monto;
+    }
+
+    public void setMonto(double monto) {
+        this.monto = monto;
+    }
+
+    public double getResto() {
+        return resto;
+    }
+
+    public void setResto(double resto) {
+        this.resto = resto;
+    }
+
+    public double getTotal() {
+        return total;
+    }
+
+    public void setTotal(double total) {
+        this.total = total;
+    }
+
+    public String getFechaCobro() {
+        return fechaCobro;
+    }
+
+    public void setFechaCobro(String fechaCobro) {
+        this.fechaCobro = fechaCobro;
+    }
+
+    public String getFechaPago() {
+        return fechaPago;
+    }
+
+    public void setFechaPago(String fechaPago) {
+        this.fechaPago = fechaPago;
+    }
+
+    public boolean isSincronizado() {
+        return sincronizado;
+    }
+
+    public void setSincronizado(boolean sincronizado) {
+        this.sincronizado = sincronizado;
+    }
+}
