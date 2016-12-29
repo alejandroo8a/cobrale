@@ -14,14 +14,13 @@ public class ventas {
     private String plazo;
     private String diaSemana;
     private double total;
-    private double abono;
     private boolean sincronizado;
 
     public ventas(){
 
     }
 
-    public ventas(Integer idCliente, Integer idProductos, Integer idPagos, String fechaVenta, String prendasTotal, String plazo, String diaSemana,double total, double abono, boolean sincronizado) {
+    public ventas(Integer idCliente, Integer idProductos, Integer idPagos, String fechaVenta, String prendasTotal, String plazo, String diaSemana,double total, boolean sincronizado) {
         this.idCliente = idCliente;
         this.idProductos = idProductos;
         this.idPagos = idPagos;
@@ -30,7 +29,6 @@ public class ventas {
         this.plazo =plazo;
         this.diaSemana =diaSemana;
         this.total = total;
-        this.abono = abono;
         this.sincronizado = sincronizado;
     }
 
@@ -96,14 +94,6 @@ public class ventas {
 
     public void setTotal(double total) {
         this.total = total;
-    }
-
-    public double getAbono() {
-        return abono;
-    }
-
-    public void setAbono(double abono) {
-        this.abono = abono;
     }
 
     public boolean isSincronizado() {

@@ -90,7 +90,7 @@ public class altaCliente extends AppCompatActivity {
     //EVENTO QUE USA EL BOTON VENDER
     public void hacerVenta(View v){
         Intent intent = new Intent(this, venta.class);
-        intent.putExtra("NOMBRE",edtNombre.getText());
+        intent.putExtra("NOMBRE",edtNombre.getText().toString());
         startActivity(intent);
     }
 

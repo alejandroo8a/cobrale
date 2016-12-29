@@ -153,7 +153,7 @@ public class clientes extends Fragment {
         edtBuscarCliente.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                //clientes.this.adaptador.getFilter().filter(charSequence);
+
             }
 
             @Override

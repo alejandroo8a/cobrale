@@ -28,6 +28,7 @@
     <TextView
         android:text="Descripción:"
         android:textSize="20dp"
+        android:maxLength="30"
         android:layout_marginTop="10dp"
         android:layout_marginLeft="10dp"
         android:layout_width="wrap_content"
@@ -55,11 +56,11 @@
 
         <EditText
             android:id="@+id/edtPrecio"
-            android:hint="00.00"
             android:layout_marginLeft="10dp"
             android:singleLine="true"
             android:textAlignment="viewEnd"
             android:layout_width="75dp"
+            android:maxLength="4"
             android:inputType="numberDecimal"
             android:layout_height="wrap_content" />
 
@@ -85,6 +86,7 @@
             android:singleLine="true"
             android:layout_width="45dp"
             android:inputType="number"
+            android:maxLength="3"
             android:textAlignment="viewEnd"
             android:layout_height="wrap_content" />
 

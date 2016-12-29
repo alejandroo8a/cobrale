@@ -7,6 +7,7 @@ package com.mcdm.alejandro.myapplication.clases;
 public class prendas {
     private String descripccion;
     private String tipoPrenda;
+    private Integer cantidad;
     private double costo;
     private boolean sincronizado;
 
@@ -15,9 +16,10 @@ public class prendas {
 
     }
 
-    public prendas(String descripccion, String tipoPrenda, double costo, boolean sincronizado) {
+    public prendas(String descripccion, String tipoPrenda, Integer cantidad, double costo, boolean sincronizado) {
         this.descripccion = descripccion;
         this.tipoPrenda = tipoPrenda;
+        this.cantidad=cantidad;
         this.costo = costo;
         this.sincronizado = sincronizado;
     }
@@ -36,6 +38,14 @@ public class prendas {
 
     public void setTipoPrenda(String tipoPrenda) {
         this.tipoPrenda = tipoPrenda;
+    }
+
+    public Integer getCantidad() {
+        return cantidad;
+    }
+
+    public void setCantidad(Integer cantidad) {
+        this.cantidad = cantidad;
     }
 
     public double getCosto() {
