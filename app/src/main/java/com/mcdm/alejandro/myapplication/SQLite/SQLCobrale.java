@@ -13,6 +13,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.mcdm.alejandro.myapplication.clases.DEBEN;
 import com.mcdm.alejandro.myapplication.clases.cliente;
 import com.mcdm.alejandro.myapplication.clases.pagos;
 import com.mcdm.alejandro.myapplication.clases.prendas;
@@ -25,6 +26,9 @@ import java.util.List;
  * Created by alejandro on 7/12/16.
  */
 
+//FALTA DARLE FUNCIONALIDAD A AGREGAR PRENDA
+//FALTA BLOQUEAR LOS OBJETOS DEL USUARIO
+//FALTA EDITAR LA VISTA DE USUARIOS
 public class SQLCobrale  extends SQLiteOpenHelper{
 
     //NOMBRE DE LA BD
@@ -34,7 +38,7 @@ public class SQLCobrale  extends SQLiteOpenHelper{
 
     //TABLAS A GENERAR
     private static String tablaCliente = "CREATE TABLE cliente(idCliente INTEGER PRIMARY KEY  AUTOINCREMENT, nombre TEXT, calle TEXT, colonia TEXT, telefono1 TEXT, telefono2 TEXT, activo BOOLEAN, razonSocial TEXT, sincronizado BOOLEAN)";
-    private static String tablaVentas = "CREATE TABLE ventas(idVenta INTEGER PRIMARY KEY AUTOINCREMENT, idCliente INTEGER, idProductos INTEGER, idPagos INTEGER, fechaVenta TEXT, prendasTotal INTEGER, total REAL, diaSemana TEXT, plazo TEXT, sincronizado BOOLEAN)";
+    private static String tablaVentas = "CREATE TABLE ventas(idVenta INTEGER PRIMARY KEY AUTOINCREMENT, idCliente INTEGER, idProductos INTEGER, idPagos INTEGER, fechaVenta TEXT, prendasTotal INTEGER, total REAL, diaSemana TEXT, plazo TEXT, pagado BOOLEAN, sincronizado BOOLEAN)";
     private static String tablaPagos = "CREATE TABLE pagos(idPago INTEGER, monto REAL, resto REAL, total REAL, fechaCobro TEXT, fechaPago TEXT, sincronizado BOOLEAN)";
     private static String tablaPrendas = "CREATE TABLE prendas(idProducto INTEGER, descripccion TEXT, tipoPrenda TEXT, costo REAL, cantidad REAL, sincronizado BOOLEAN)";
     private static String tablaLugares =  "CREATE TABLE lugar(idLugar INTEGER PRIMARY KEY AUTOINCREMENT, nombre TEXT)";
@@ -164,6 +168,7 @@ public class SQLCobrale  extends SQLiteOpenHelper{
         sell.put("total",ven.getTotal());
         sell.put("diaSemana",ven.getDiaSemana());
         sell.put("plazo", ven.getPlazo());
+        sell.put("pagado",ven.isPagado());
         sell.put("sincronizado",ven.isSincronizado());
         try{
             db.insertOrThrow(venta,null,sell);
@@ -260,5 +265,24 @@ public class SQLCobrale  extends SQLiteOpenHelper{
         cursor.close();
         db.close();
         return persona;
+    }
+
+    public ArrayList<DEBEN> getDeben(){
+        SQLiteDatabase db = getWritableDatabase();
+        ArrayList<DEBEN> listaDeben = new ArrayList<>();
+        Cursor cursor = db.rawQuery("SELECT "+clienteT+".nombre, "+pago+".resto, "+pago+".fechaCobro FROM "+pago+
+                " INNER JOIN "+ venta +" ON "+pago+ ".idPago = "+venta+".idPagos"+
+                " INNER JOIN "+ clienteT +" ON "+ venta + ".idCliente = "+clienteT +".idCliente"+
+                " WHERE "+venta+ ".pagado = 0",null);
+        if(cursor.moveToFirst()){
+            do {
+                DEBEN deben = new DEBEN();
+                deben.setNombre(cursor.getString(0));
+                deben.setResto(cursor.getString(1));
+                deben.setFecha(cursor.getString(2));
+                listaDeben.add(deben);
+            }while (cursor.moveToNext());
+        }
+        return listaDeben;
     }
 }

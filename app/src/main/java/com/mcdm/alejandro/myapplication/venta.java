@@ -37,6 +37,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 
+
 public class venta extends AppCompatActivity {
     private static final String TAG = "venta";
 
@@ -335,7 +336,7 @@ public class venta extends AppCompatActivity {
     private void insertarPago(){
         pagos p = new pagos();
         p.setMonto(abono);
-        p.setResto(total);
+        p.setResto(Double.valueOf(txtTotal.getText().toString()));
         p.setTotal(subTotal);
         p.setFechaPago(txtFecha.getText().toString());
         p.setFechaCobro(fechaCobro);
@@ -353,6 +354,10 @@ public class venta extends AppCompatActivity {
         sell.setTotal(subTotal);
         sell.setDiaSemana(spDia.getSelectedItem().toString());
         sell.setPlazo(spPlazo.getSelectedItem().toString());
+        if(spPlazo.getSelectedItemPosition() != 4)
+            sell.setPagado(false);
+        else
+            sell.setPagado(true);
         sell.setSincronizado(false);
         db.insertVenta(sell,this);
     }

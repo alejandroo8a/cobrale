@@ -3,10 +3,19 @@ package com.mcdm.alejandro.myapplication;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.GridView;
+import android.widget.TextView;
+
+import com.mcdm.alejandro.myapplication.SQLite.SQLCobrale;
+import com.mcdm.alejandro.myapplication.adapter.adapter_deben;
+import com.mcdm.alejandro.myapplication.clases.DEBEN;
+
+import java.util.ArrayList;
 
 
 /**
@@ -17,7 +26,15 @@ import android.view.ViewGroup;
  */
 public class deben extends Fragment {
 
+    static private final String TAG ="deben";
+
     private OnFragmentInteractionListener mListener;
+    private GridView grdDeben;
+    private TextView txtDeben;
+
+    private ArrayList<DEBEN> listaDeben;
+    private adapter_deben adapter_deben;
+    private SQLCobrale db;
 
     public deben() {
         // Required empty public constructor
@@ -28,7 +45,32 @@ public class deben extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_deben, container, false);
+        View v = inflater.inflate(R.layout.fragment_deben, container, false);
+        grdDeben = (GridView)v.findViewById(R.id.grdDeben);
+        txtDeben = (TextView)v.findViewById(R.id.txtDeben);
+        return v;
+    }
+
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        listaDeben = new ArrayList<>();
+        db = new SQLCobrale(getContext());
+        llenarListaDeben();
+        llenarDatagridDeben();
+
+    }
+
+    private void llenarListaDeben(){
+        listaDeben = db.getDeben();
+    }
+
+    private void llenarDatagridDeben(){
+        if(listaDeben.size()>0){
+            txtDeben.setVisibility(View.INVISIBLE);
+            adapter_deben = new adapter_deben(getContext(),listaDeben);
+            grdDeben.setAdapter(adapter_deben);
+        }
     }
 
     // TODO: Rename method, update argument and hook method into UI event
@@ -48,7 +90,10 @@ public class deben extends Fragment {
         super.onDetach();
         mListener = null;
     }
-
+    /*adapterProducto = new adapter_producto(getApplicationContext(), listaPrendas);
+    params.height += 100;
+    grdProductos.setLayoutParams(params);
+    grdProductos.setAdapter(adapterProducto);*/
     /**
      * This interface must be implemented by activities that contain this
      * fragment to allow an interaction in this fragment to be communicated
