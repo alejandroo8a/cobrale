@@ -34,7 +34,7 @@ public class cobroHoy extends Fragment {
     private static final String ARG_PARAM3 = "param3";
     private static final String ARG_PARAM4 = "param4";
     private static final String ARG_PARAM5 = "param5";
-    private static String TAG = "cobroHoy";
+    static private final String TAG ="cobroHoy";
     ViewPager viewPager;
     TabLayout tabLayout;
 

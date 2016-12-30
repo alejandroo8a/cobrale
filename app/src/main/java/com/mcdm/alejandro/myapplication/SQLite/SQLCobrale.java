@@ -285,4 +285,23 @@ public class SQLCobrale  extends SQLiteOpenHelper{
         }
         return listaDeben;
     }
+
+    public ArrayList<DEBEN> getDebenHoy(String fecha){
+        SQLiteDatabase db = getWritableDatabase();
+        ArrayList<DEBEN> listaDeben = new ArrayList<>();
+        Cursor cursor = db.rawQuery("SELECT "+clienteT+".nombre, "+pago+".resto, "+pago+".fechaCobro FROM "+pago+
+                " INNER JOIN "+ venta +" ON "+pago+ ".idPago = "+venta+".idPagos"+
+                " INNER JOIN "+ clienteT +" ON "+ venta + ".idCliente = "+clienteT +".idCliente"+
+                " WHERE "+venta+ ".pagado = 0 AND "+pago+".fechaCobro = '"+fecha+"'",null);
+        if(cursor.moveToFirst()){
+            do {
+                DEBEN deben = new DEBEN();
+                deben.setNombre(cursor.getString(0));
+                deben.setResto(cursor.getString(1));
+                deben.setFecha("Debe pagar hoy");
+                listaDeben.add(deben);
+            }while (cursor.moveToNext());
+        }
+        return listaDeben;
+    }
 }
