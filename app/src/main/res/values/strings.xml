@@ -7,7 +7,7 @@
     <string name="direccion">Direccion</string>
     <string name="tel1">Telefono</string>
     <string name="tel2">Telefono 2</string>
-    <string name="guardar">Guardar</string>
+    <string name="guardar">GUARDAR</string>
     <string name="colonia">Colonia</string>
     <string name="calle">Calle</string>
     <string name="celular">Celular</string>
@@ -21,15 +21,7 @@
         <item>2 Semanas</item>
         <item>3 Semanas</item>
         <item>1 Mes</item>
-        <item>Al contado </item>
-    </string-array>
-
-
-    <string-array name="Ropa">
-        <item>Blusa </item>
-        <item>Pantalon </item>
-        <item>Falda</item>
-        <item>Vestido</item>
+        <item>Liquidar </item>
     </string-array>
 
     <string-array name="Semana">

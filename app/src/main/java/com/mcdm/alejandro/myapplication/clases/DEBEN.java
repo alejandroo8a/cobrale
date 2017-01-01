@@ -6,17 +6,29 @@ package com.mcdm.alejandro.myapplication.clases;
 
 public class DEBEN {
 
+    private Integer id;
     private String nombre;
     private String fecha;
     private String resto;
+    private Double total;
 
     public DEBEN() {
     }
 
-    public DEBEN(String nombre, String fecha, String resto) {
+    public DEBEN(Integer id,String nombre, String fecha, String resto, Double total) {
+        this.id= id;
         this.nombre = nombre;
         this.fecha = fecha;
         this.resto = resto;
+        this.total = total;
+    }
+
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
     }
 
     public String getNombre() {
@@ -41,5 +53,13 @@ public class DEBEN {
 
     public void setResto(String resto) {
         this.resto = resto;
+    }
+
+    public Double getTotal() {
+        return total;
+    }
+
+    public void setTotal(Double total) {
+        this.total = total;
     }
 }

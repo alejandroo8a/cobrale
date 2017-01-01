@@ -14,7 +14,7 @@
         android:id="@+id/txtNombreDeben"
         android:layout_marginTop="10dp"
         android:layout_marginLeft="70dp"
-        android:textSize="20dp"
+        android:textSize="23dp"
         android:maxLength="20"
         android:text="Alejandro Ochoa"
         android:layout_width="wrap_content"
@@ -23,7 +23,7 @@
         android:id="@+id/txtFechaDeben"
         android:layout_marginTop="35dp"
         android:layout_marginLeft="70dp"
-        android:textSize="18dp"
+        android:textSize="21dp"
         android:text="Fecha a cobrar:"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />

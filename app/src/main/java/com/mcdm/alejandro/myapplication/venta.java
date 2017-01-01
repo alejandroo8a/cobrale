@@ -36,6 +36,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 
 
 public class venta extends AppCompatActivity {
@@ -48,8 +49,10 @@ public class venta extends AppCompatActivity {
     private ViewGroup.LayoutParams params;
     private TextView txtTotalPrendas, txtSubTotal, txtTotal, txtClienteVenta, txtFecha;
     private EditText edtAbono;
+    private Spinner spTipoPrenda;
 
     private ArrayList<prendas> listaPrendas;
+    private List<String> listaRopa;
     private String tipo, descripcion, fechaCobro="";
     private double costo,subTotal=0.0, total= 0.0, abono=0.0;
     private Integer cantidad=0, idProducto=0, idPago=0, totalPrendas=0;
@@ -125,13 +128,12 @@ public class venta extends AppCompatActivity {
         final AlertDialog.Builder builder = new AlertDialog.Builder(venta.this);
         LayoutInflater inflater = this.getLayoutInflater();
         final View v = inflater.inflate(R.layout.dialog_agregar_producto,null);
-        final Spinner spTipoPrenda = (Spinner)v.findViewById(R.id.spTipoPrenda);
+        spTipoPrenda = (Spinner)v.findViewById(R.id.spTipoPrenda);
         final EditText edtDescripcion = (EditText)v.findViewById(R.id.edtDescripcion);
         final EditText edtPrecio = (EditText)v.findViewById(R.id.edtPrecio);
         final EditText edtCantidad = (EditText)v.findViewById(R.id.edtCantidad);
         edtPrecio.setFocusable(true);
-        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(getApplicationContext(),R.array.Ropa, R.layout.spinner_item);
-        spTipoPrenda.setAdapter(adapter);
+        llenarSpinnerRopa();
         builder.setView(v);
         builder.setPositiveButton("Agregar", new DialogInterface.OnClickListener() {
             @Override
@@ -147,7 +149,7 @@ public class venta extends AppCompatActivity {
         //SE UTILIZA PARA QUE NO SE CANCELE AL MOMENTO DE PRECIONAR ALGÚN BOTON
         final AlertDialog dialog = builder.create();
         dialog.show();
-        //Overriding the handler immediately after show is probably a better approach than OnShowListener as described below
+
         dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(new View.OnClickListener()
         {
             @Override
@@ -183,6 +185,45 @@ public class venta extends AppCompatActivity {
                 }
             }
         });
+        dialog.getButton(AlertDialog.BUTTON_NEUTRAL).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                dialogRopa();
+            }
+        });
+    }
+
+    private void dialogRopa(){
+        final AlertDialog.Builder builder = new AlertDialog.Builder(venta.this);
+        LayoutInflater inflater = this.getLayoutInflater();
+        final View  view = inflater.inflate(R.layout.dialog_razon_social,null);
+        TextView txtRazonSocial = (TextView)view.findViewById(R.id.txtRazonSocial);
+        final EditText edtRazon = (EditText)view.findViewById(R.id.edtRazon);
+        txtRazonSocial.setText("Agregar tipo de prenda");
+        edtRazon.setHint("Tipo prenda");
+        builder.setView(view);
+        builder.setPositiveButton("Agregar", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                db.insertRopa(edtRazon.getText().toString(),getApplicationContext());
+                llenarSpinnerRopa();
+            }
+        })
+        .setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+
+            }
+        })
+        .show();
+    }
+    private void llenarSpinnerRopa(){
+        listaRopa = null;
+        listaRopa = db.getRopa();
+        //PARA CREAR SPINNERS DESDE LOS RECURSOS DEL SISTEMA EN STRING
+        //ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(getApplicationContext(),listaRopa, R.layout.spinner_item);
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, R.layout.spinner_item,listaRopa);
+        spTipoPrenda.setAdapter(adapter);
     }
 
     public void hacerVenta(View v){
@@ -215,16 +256,16 @@ public class venta extends AppCompatActivity {
 
     private void dialogFecha(){
         final Calendar c = Calendar.getInstance();
-        Integer mYear = c.get(Calendar.YEAR);
-        Integer mMonth = c.get(Calendar.MONTH);
         Integer mDay = c.get(Calendar.DAY_OF_MONTH);
+        Integer mMonth = c.get(Calendar.MONTH);
+        Integer mYear = c.get(Calendar.YEAR);
         DatePickerDialog dpd = new DatePickerDialog(venta.this,
                 new DatePickerDialog.OnDateSetListener() {
                     @Override
                     public void onDateSet(DatePicker view, int year,
                                           int monthOfYear, int dayOfMonth) {
-                        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy/MM/dd");
-                        String fechaFormateada=year+"/"+(monthOfYear+1)+"/"+dayOfMonth;
+                        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd/MM/yyyy");
+                        String fechaFormateada=dayOfMonth+"/"+(monthOfYear+1)+"/"+year;
                         try {
                             Date fecha = simpleDateFormat.parse(fechaFormateada);
                             fechaFormateada = simpleDateFormat.format(fecha);
@@ -234,13 +275,13 @@ public class venta extends AppCompatActivity {
                         txtFecha.setText(fechaFormateada);
 
                     }
-                }, mYear, mMonth, mDay);
+                },mYear , mMonth, mDay );
         dpd.show();
     }
 
     private void sumarFecha(){
         int entrar = spPlazo.getSelectedItemPosition();
-        SimpleDateFormat format = new SimpleDateFormat("yyyy/MM/dd");
+        SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy");
         Calendar calendar = Calendar.getInstance();
         Date fecha = null;
         try{
@@ -276,7 +317,7 @@ public class venta extends AppCompatActivity {
     }
 
     private void fechaHoy(){
-        SimpleDateFormat format = new SimpleDateFormat("yyyy/MM/dd");
+        SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy");
         Calendar calendar = Calendar.getInstance();
         txtFecha.setText(format.format(calendar.getTime()));
     }

@@ -20,15 +20,16 @@ import com.mcdm.alejandro.myapplication.clases.prendas;
 import com.mcdm.alejandro.myapplication.clases.ventas;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 /**
  * Created by alejandro on 7/12/16.
  */
 
-//FALTA DARLE FUNCIONALIDAD A AGREGAR PRENDA
-//FALTA BLOQUEAR LOS OBJETOS DEL USUARIO
-//FALTA EDITAR LA VISTA DE USUARIOS
+
 public class SQLCobrale  extends SQLiteOpenHelper{
 
     //NOMBRE DE LA BD
@@ -41,13 +42,15 @@ public class SQLCobrale  extends SQLiteOpenHelper{
     private static String tablaVentas = "CREATE TABLE ventas(idVenta INTEGER PRIMARY KEY AUTOINCREMENT, idCliente INTEGER, idProductos INTEGER, idPagos INTEGER, fechaVenta TEXT, prendasTotal INTEGER, total REAL, diaSemana TEXT, plazo TEXT, pagado BOOLEAN, sincronizado BOOLEAN)";
     private static String tablaPagos = "CREATE TABLE pagos(idPago INTEGER, monto REAL, resto REAL, total REAL, fechaCobro TEXT, fechaPago TEXT, sincronizado BOOLEAN)";
     private static String tablaPrendas = "CREATE TABLE prendas(idProducto INTEGER, descripccion TEXT, tipoPrenda TEXT, costo REAL, cantidad REAL, sincronizado BOOLEAN)";
-    private static String tablaLugares =  "CREATE TABLE lugar(idLugar INTEGER PRIMARY KEY AUTOINCREMENT, nombre TEXT)";
+    private static String tablaRopa = "CREATE TABLE ropa(idRopa INTEGER PRIMARY KEY AUTOINCREMENT, nombre TEXT, sincronizado BOOLEAN)";
+    private static String tablaLugares =  "CREATE TABLE lugar(idLugar INTEGER PRIMARY KEY AUTOINCREMENT, nombre TEXT, sincronizado BOOLEAN)";
 
     //NOMBRE DE TABLAS
     final String clienteT = "cliente";
     final String venta = "ventas";
     final String pago = "pagos";
     final String prenda = "prendas";
+    final String ropa = "ropa";
     final String lugares = "lugar";
 
     public SQLCobrale(Context context){
@@ -61,6 +64,7 @@ public class SQLCobrale  extends SQLiteOpenHelper{
         sqLiteDatabase.execSQL(tablaVentas);
         sqLiteDatabase.execSQL(tablaPagos);
         sqLiteDatabase.execSQL(tablaPrendas);
+        sqLiteDatabase.execSQL(tablaRopa);
         sqLiteDatabase.execSQL(tablaLugares);
         Log.d(TAG, "EXITOSAMENTE CREADAS LAS TABLAS ");
     }
@@ -71,11 +75,13 @@ public class SQLCobrale  extends SQLiteOpenHelper{
         sqLiteDatabase.execSQL("DROP TABLE IF EXISTS "+venta);
         sqLiteDatabase.execSQL("DROP TABLE IF EXISTS "+pago);
         sqLiteDatabase.execSQL("DROP TABLE I EXISTS "+prenda);
+        sqLiteDatabase.execSQL("DROP TABLE I EXISTS "+ropa);
         sqLiteDatabase.execSQL("DROP TABLE I EXISTS "+lugares);
         sqLiteDatabase.execSQL(tablaCliente);
         sqLiteDatabase.execSQL(tablaVentas);
         sqLiteDatabase.execSQL(tablaPagos);
         sqLiteDatabase.execSQL(tablaPrendas);
+        sqLiteDatabase.execSQL(tablaRopa);
         sqLiteDatabase.execSQL(tablaLugares);
     }
 
@@ -110,7 +116,7 @@ public class SQLCobrale  extends SQLiteOpenHelper{
         nuevaRazon.put("nombre", razon);
         try {
             db.insertOrThrow(lugares, null, nuevaRazon);
-            Toast.makeText(context, "Se insertó la razón social", Toast.LENGTH_SHORT).show();
+            Log.d(TAG, "SE INSERTO LA RAZON SOCIAL ");
         }catch (SQLiteException ex){
             Log.d(TAG, "ERROR AL INSERTAR "+ex.getMessage());
             Toast.makeText(context, "No se insertó la razón social, intentelo de nuevo", Toast.LENGTH_SHORT).show();
@@ -182,6 +188,21 @@ public class SQLCobrale  extends SQLiteOpenHelper{
 
     }
 
+    public void insertRopa(String nombre, Context context){
+        SQLiteDatabase db = getWritableDatabase();
+        ContentValues ropas = new ContentValues();
+        ropas.put("nombre", nombre);
+        ropas.put("sincronizado", false);
+        try{
+            db.insertOrThrow(ropa,null,ropas);
+            Log.d(TAG, "ROPA INSERTADA CORRECTAMENTE ");
+        }catch (SQLiteException ex){
+            Toast.makeText(context, "Problema al insertar la prenda: "+ex.getMessage(), Toast.LENGTH_SHORT).show();
+            Log.d(TAG, "PROBLEMA AL INSERTAR LA ROPA "+ ex.getMessage());
+        }
+        db.close();
+    }
+
 
 
     //ELIMINAR***********************************
@@ -213,6 +234,18 @@ public class SQLCobrale  extends SQLiteOpenHelper{
             Toast.makeText(context, "No se actualizó el cliente", Toast.LENGTH_SHORT).show();
         }
 
+    }
+
+    public void updateVenta(Integer idPago, Context context){
+        SQLiteDatabase db = getWritableDatabase();
+        ContentValues actualizarPagado = new ContentValues();
+        actualizarPagado.put("pagado",true);
+        try{
+            db.update(venta,actualizarPagado,"idPagos="+idPago,null);
+            Toast.makeText(context, "El cliente término su deuda", Toast.LENGTH_SHORT).show();
+        }catch (SQLiteException ex){
+            Toast.makeText(context, "Error al completar el pago: "+ex.getMessage(), Toast.LENGTH_SHORT).show();
+        }
     }
 
 
@@ -270,26 +303,38 @@ public class SQLCobrale  extends SQLiteOpenHelper{
     public ArrayList<DEBEN> getDeben(){
         SQLiteDatabase db = getWritableDatabase();
         ArrayList<DEBEN> listaDeben = new ArrayList<>();
-        Cursor cursor = db.rawQuery("SELECT "+clienteT+".nombre, "+pago+".resto, "+pago+".fechaCobro FROM "+pago+
+        ArrayList<DEBEN> listaBuena = new ArrayList<>();
+        Cursor cursor = db.rawQuery("SELECT "+clienteT+".nombre, "+pago+".resto, "+pago+".fechaCobro, "+pago+".idPago, "+pago+".total FROM "+pago+
                 " INNER JOIN "+ venta +" ON "+pago+ ".idPago = "+venta+".idPagos"+
                 " INNER JOIN "+ clienteT +" ON "+ venta + ".idCliente = "+clienteT +".idCliente"+
-                " WHERE "+venta+ ".pagado = 0",null);
+                " WHERE "+venta+ ".pagado = 0 ORDER BY "+pago+".fechaCobro ASC",null);
         if(cursor.moveToFirst()){
             do {
                 DEBEN deben = new DEBEN();
                 deben.setNombre(cursor.getString(0));
                 deben.setResto(cursor.getString(1));
                 deben.setFecha(cursor.getString(2));
+                deben.setId(cursor.getInt(3));
+                deben.setTotal(cursor.getDouble(4));
                 listaDeben.add(deben);
             }while (cursor.moveToNext());
         }
-        return listaDeben;
+        for (int i = 0 ; i<listaDeben.size() ; i++) {
+            listaBuena.add(listaDeben.get(i));
+            for(int n = i+1 ; n < listaDeben.size() ; n++){
+                if(listaBuena.get(i).getId() == listaDeben.get(n).getId()) {
+                    listaDeben.remove(n);
+                    n--;
+                }
+            }
+        }
+        return listaBuena;
     }
 
     public ArrayList<DEBEN> getDebenHoy(String fecha){
         SQLiteDatabase db = getWritableDatabase();
         ArrayList<DEBEN> listaDeben = new ArrayList<>();
-        Cursor cursor = db.rawQuery("SELECT "+clienteT+".nombre, "+pago+".resto, "+pago+".fechaCobro FROM "+pago+
+        Cursor cursor = db.rawQuery("SELECT "+clienteT+".nombre, "+pago+".resto, "+pago+".fechaCobro, "+pago+".idPago FROM "+pago+
                 " INNER JOIN "+ venta +" ON "+pago+ ".idPago = "+venta+".idPagos"+
                 " INNER JOIN "+ clienteT +" ON "+ venta + ".idCliente = "+clienteT +".idCliente"+
                 " WHERE "+venta+ ".pagado = 0 AND "+pago+".fechaCobro = '"+fecha+"'",null);
@@ -299,9 +344,23 @@ public class SQLCobrale  extends SQLiteOpenHelper{
                 deben.setNombre(cursor.getString(0));
                 deben.setResto(cursor.getString(1));
                 deben.setFecha("Debe pagar hoy");
+                deben.setId(cursor.getInt(3));
                 listaDeben.add(deben);
             }while (cursor.moveToNext());
         }
         return listaDeben;
     }
+
+    public List<String> getRopa(){
+        SQLiteDatabase db = getWritableDatabase();
+        List<String> listaRopa = new ArrayList<>();
+        Cursor cursor = db.rawQuery("SELECT nombre FROM "+ropa,null);
+        if(cursor.moveToFirst()){
+            do{
+                listaRopa.add(cursor.getString(0));
+            }while (cursor.moveToNext());
+        }
+        return listaRopa;
+    }
 }
+

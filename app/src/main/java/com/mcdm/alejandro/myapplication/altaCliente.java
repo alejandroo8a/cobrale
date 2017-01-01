@@ -53,6 +53,8 @@ public class altaCliente extends AppCompatActivity {
         actualizar = getIntent().getBooleanExtra("ACTUALIZAR",false);
         btnVenta.setVisibility(View.INVISIBLE);
         if(actualizar){
+            habilitarControles(false);
+            btnGuardar.setText("Actualizar");
             agregarCliente(getIntent().getStringExtra("NOMBRE"));
             btnVenta.setVisibility(View.VISIBLE);
         }
@@ -62,25 +64,32 @@ public class altaCliente extends AppCompatActivity {
     }
     //EVENTO QUE USA EL BOTON GUARDAR
     public void guardarCliente(View v){
-        if(edtNombre.length()==0 )
-            Toast.makeText(this, "Agregue un nombre al cliente", Toast.LENGTH_SHORT).show();
-        else {
-            persona.setNombre(edtNombre.getText().toString());
-            persona.setCalle(edtCalle.getText().toString());
-            persona.setColonia(edtColonia.getText().toString());
-            persona.setTelefono1(edtTelefono1.getText().toString());
-            persona.setTelefono2(edtTelefono2.getText().toString());
-            persona.setRazonSocial(spRazonSocial.getSelectedItem().toString());
-            persona.setActivo(true);
-            persona.setSincronizado(false);
-            if(!actualizar)
-                db.insertCliente(persona,getApplicationContext());
-            else
-                db.updateCliente(persona,getApplicationContext());
-            cleanScreen();
-            actualizar=false;
-            this.finish();
+        if(btnGuardar.getText().toString().equals("GUARDAR")) {
+            if (edtNombre.length() == 0)
+                Toast.makeText(this, "Agregue un nombre al cliente", Toast.LENGTH_SHORT).show();
+            else {
+                persona.setNombre(edtNombre.getText().toString());
+                persona.setCalle(edtCalle.getText().toString());
+                persona.setColonia(edtColonia.getText().toString());
+                persona.setTelefono1(edtTelefono1.getText().toString());
+                persona.setTelefono2(edtTelefono2.getText().toString());
+                persona.setRazonSocial(spRazonSocial.getSelectedItem().toString());
+                persona.setActivo(true);
+                persona.setSincronizado(false);
+                if (!actualizar)
+                    db.insertCliente(persona, getApplicationContext());
+                else
+                    db.updateCliente(persona, getApplicationContext());
+                cleanScreen();
+                actualizar = false;
+                this.finish();
+            }
         }
+        else {
+            habilitarControles(true);
+            btnGuardar.setText("GUARDAR");
+        }
+
 
     }
     //EVENTO QUE USA EL BOTON AGREGAR
@@ -145,6 +154,17 @@ public class altaCliente extends AppCompatActivity {
         spRazonSocial.setSelection(position);
         btnGuardar.setText("ACTUALIZAR");
     }
+
+    private void habilitarControles(Boolean ac){
+        edtNombre.setEnabled(ac);
+        edtCalle.setEnabled(ac);
+        edtColonia.setEnabled(ac);
+        edtTelefono1.setEnabled(ac);
+        edtTelefono2.setEnabled(ac);
+        spRazonSocial.setEnabled(ac);
+        btnAgregarRazon.setEnabled(ac);
+    }
+
     @Override
     public void onBackPressed() {
         super.onBackPressed();
