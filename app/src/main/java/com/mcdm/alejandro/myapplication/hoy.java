@@ -1,21 +1,30 @@
 package com.mcdm.alejandro.myapplication;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AlertDialog;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.EditText;
 import android.widget.GridView;
 import android.widget.ImageView;
+import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.mcdm.alejandro.myapplication.SQLite.SQLCobrale;
 import com.mcdm.alejandro.myapplication.adapter.adapter_deben;
 import com.mcdm.alejandro.myapplication.clases.DEBEN;
+import com.mcdm.alejandro.myapplication.clases.pagos;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -35,11 +44,14 @@ public class hoy extends Fragment {
     private GridView grdCobrarHoy;
     private ImageView imgDescanso;
     private TextView txtNoHayCobrar;
+    private Spinner spPlazoAbono;
 
     private ArrayList<DEBEN> listaDeben;
     private adapter_deben adapter_deben;
     private SQLCobrale db;
     private String fecha="";
+    private String fechaCobro="", fechaPago="";
+    private Double total = 0.0, resto = 0.0;
 
     public hoy() {
         // Required empty public constructor
@@ -62,11 +74,21 @@ public class hoy extends Fragment {
         super.onActivityCreated(savedInstanceState);
         listaDeben = new ArrayList<>();
         db = new SQLCobrale(getContext());
-        llenarListaDeben();
+        try {
+            llenarListaDeben();
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
         llenarGrid();
+        grdCobrarHoy.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                crearDialogPago(i);
+            }
+        });
     }
 
-    private void llenarListaDeben(){
+    private void llenarListaDeben() throws ParseException {
         fechaHoy();
         listaDeben = db.getDebenHoy(fecha);
     }
@@ -80,8 +102,90 @@ public class hoy extends Fragment {
         }
     }
 
+    private void crearDialogPago(final int posicion){
+        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+        LayoutInflater inflater = getActivity().getLayoutInflater();
+        final View view = inflater.inflate(R.layout.dialog_abono,null);
+        final EditText edtCantidadAbono = (EditText)view.findViewById(R.id.edtCantidadAbono);
+        spPlazoAbono = (Spinner)view.findViewById(R.id.spPlazoAbono);
+        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(getContext(), R.array.Plazo, R.layout.spinner_item);
+        spPlazoAbono.setAdapter(adapter);
+        builder.setView(view);
+        builder.setPositiveButton("Abonar", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                fechaHoy();
+                sumarFecha();
+                resto = Double.parseDouble(listaDeben.get(posicion).getResto())-Double.parseDouble(edtCantidadAbono.getText().toString());
+                total=listaDeben.get(posicion).getTotal();
+                pagos pago = new pagos();
+                pago.setMonto(Double.parseDouble(edtCantidadAbono.getText().toString()));
+                pago.setResto(resto);
+                pago.setTotal(total);
+                pago.setFechaCobro(fechaCobro);
+                pago.setFechaPago(fechaPago);
+                pago.setActivo(true);
+                pago.setSincronizado(false);
+                db.updatePago(listaDeben.get(posicion).getId(),getContext());
+                db.insertPago(listaDeben.get(posicion).getId(),pago,getContext());
+                if(resto==0.0)
+                    db.updateVenta(listaDeben.get(posicion).getId(),getContext());
+                listaDeben.clear();
+                try {
+                    llenarListaDeben();
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
+                if(listaDeben.size()>0)
+                    llenarGrid();
+                else{
+                    imgDescanso.setVisibility(View.VISIBLE);
+                    txtNoHayCobrar.setVisibility(View.VISIBLE);
+                    grdCobrarHoy.setVisibility(View.INVISIBLE);
+                }
+            }
+        })
+                .setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+
+                    }
+                })
+                .show();
+    }
+
+    private void sumarFecha(){
+        int entrar = spPlazoAbono.getSelectedItemPosition();
+        SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy");
+        Calendar calendar = Calendar.getInstance();
+        switch (entrar){
+            case 0:
+                //1 semana
+                calendar.add(Calendar.DAY_OF_YEAR, 7);
+                break;
+            case 1:
+                //2 semanas
+                calendar.add(Calendar.DAY_OF_YEAR, 14);
+                break;
+            case 2:
+                // 3 semanas
+                calendar.add(Calendar.DAY_OF_YEAR, 21);
+                break;
+            case 3:
+                // 4 semanas;
+                calendar.add(Calendar.MONTH, 1);
+                break;
+            default:
+                //al contado
+                break;
+        }
+
+        fechaCobro = format.format(calendar.getTime());
+        Log.d(TAG, "FECHA A COBRAR "+fechaCobro);
+    }
+
     private void fechaHoy(){
-        SimpleDateFormat format = new SimpleDateFormat("yyyy/MM/dd");
+        SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy");
         Calendar calendar = Calendar.getInstance();
         fecha=format.format(calendar.getTime());
     }

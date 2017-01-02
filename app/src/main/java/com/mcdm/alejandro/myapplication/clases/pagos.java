@@ -11,18 +11,20 @@ public class pagos {
     private double total;
     private String fechaCobro;//ES CUANDO SE SUPONE QUE EL CLIENTE DEBE DE PAGAR
     private String fechaPago;//CUANDL EL CLIENTE REALIZA EL PAGO
+    private boolean activo;
     private boolean sincronizado;
 
     public pagos(){
 
     }
 
-    public pagos(double monto, double resto, double total, String fechaCobro, String fechaPago, boolean sincronizado) {
+    public pagos(double monto, double resto, double total, String fechaCobro, String fechaPago, boolean activo, boolean sincronizado) {
         this.monto = monto;
         this.resto = resto;
         this.total = total;
         this.fechaCobro = fechaCobro;
         this.fechaPago = fechaPago;
+        this.activo = activo;
         this.sincronizado = sincronizado;
     }
 
@@ -64,6 +66,14 @@ public class pagos {
 
     public void setFechaPago(String fechaPago) {
         this.fechaPago = fechaPago;
+    }
+
+    public boolean isActivo() {
+        return activo;
+    }
+
+    public void setActivo(boolean activo) {
+        this.activo = activo;
     }
 
     public boolean isSincronizado() {

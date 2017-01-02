@@ -19,10 +19,13 @@ import com.mcdm.alejandro.myapplication.clases.pagos;
 import com.mcdm.alejandro.myapplication.clases.prendas;
 import com.mcdm.alejandro.myapplication.clases.ventas;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -40,7 +43,7 @@ public class SQLCobrale  extends SQLiteOpenHelper{
     //TABLAS A GENERAR
     private static String tablaCliente = "CREATE TABLE cliente(idCliente INTEGER PRIMARY KEY  AUTOINCREMENT, nombre TEXT, calle TEXT, colonia TEXT, telefono1 TEXT, telefono2 TEXT, activo BOOLEAN, razonSocial TEXT, sincronizado BOOLEAN)";
     private static String tablaVentas = "CREATE TABLE ventas(idVenta INTEGER PRIMARY KEY AUTOINCREMENT, idCliente INTEGER, idProductos INTEGER, idPagos INTEGER, fechaVenta TEXT, prendasTotal INTEGER, total REAL, diaSemana TEXT, plazo TEXT, pagado BOOLEAN, sincronizado BOOLEAN)";
-    private static String tablaPagos = "CREATE TABLE pagos(idPago INTEGER, monto REAL, resto REAL, total REAL, fechaCobro TEXT, fechaPago TEXT, sincronizado BOOLEAN)";
+    private static String tablaPagos = "CREATE TABLE pagos(idPago INTEGER, monto REAL, resto REAL, total REAL, fechaCobro TEXT, fechaPago TEXT, activo BOOLEAN, sincronizado BOOLEAN)";
     private static String tablaPrendas = "CREATE TABLE prendas(idProducto INTEGER, descripccion TEXT, tipoPrenda TEXT, costo REAL, cantidad REAL, sincronizado BOOLEAN)";
     private static String tablaRopa = "CREATE TABLE ropa(idRopa INTEGER PRIMARY KEY AUTOINCREMENT, nombre TEXT, sincronizado BOOLEAN)";
     private static String tablaLugares =  "CREATE TABLE lugar(idLugar INTEGER PRIMARY KEY AUTOINCREMENT, nombre TEXT, sincronizado BOOLEAN)";
@@ -153,6 +156,7 @@ public class SQLCobrale  extends SQLiteOpenHelper{
         p.put("total",pay.getTotal());
         p.put("fechaCobro",pay.getFechaCobro());
         p.put("fechaPago",pay.getFechaPago());
+        p.put("activo",pay.isActivo());
         p.put("sincronizado",pay.isSincronizado());
         try{
             db.insertOrThrow(pago,null,p);
@@ -235,7 +239,7 @@ public class SQLCobrale  extends SQLiteOpenHelper{
         }
 
     }
-
+    //ACTUALIZAR LA TABLA DE VENTAS QUE EL PAGO SE TERMINÓ DE PAGAR
     public void updateVenta(Integer idPago, Context context){
         SQLiteDatabase db = getWritableDatabase();
         ContentValues actualizarPagado = new ContentValues();
@@ -245,6 +249,20 @@ public class SQLCobrale  extends SQLiteOpenHelper{
             Toast.makeText(context, "El cliente término su deuda", Toast.LENGTH_SHORT).show();
         }catch (SQLiteException ex){
             Toast.makeText(context, "Error al completar el pago: "+ex.getMessage(), Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    //ACTUALIZA EL PAGO ANTESESOR
+    public void updatePago(Integer idPago, Context context){
+        SQLiteDatabase db = getWritableDatabase();
+        ContentValues actualizarPago = new ContentValues();
+        actualizarPago.put("activo",false);
+        try{
+            db.update(pago,actualizarPago,"idPago="+idPago+" AND activo = 1",null);
+            Log.d(TAG, "ACTUALIZACION DE PAGO CORRECTAMENTE ");
+        }catch (SQLiteException ex){
+            Log.d(TAG, "SIN PAGO: "+ex.getMessage());
+            Toast.makeText(context, "No se actualizó el pago", Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -303,11 +321,11 @@ public class SQLCobrale  extends SQLiteOpenHelper{
     public ArrayList<DEBEN> getDeben(){
         SQLiteDatabase db = getWritableDatabase();
         ArrayList<DEBEN> listaDeben = new ArrayList<>();
-        ArrayList<DEBEN> listaBuena = new ArrayList<>();
+        //ArrayList<DEBEN> listaBuena = new ArrayList<>();
         Cursor cursor = db.rawQuery("SELECT "+clienteT+".nombre, "+pago+".resto, "+pago+".fechaCobro, "+pago+".idPago, "+pago+".total FROM "+pago+
                 " INNER JOIN "+ venta +" ON "+pago+ ".idPago = "+venta+".idPagos"+
                 " INNER JOIN "+ clienteT +" ON "+ venta + ".idCliente = "+clienteT +".idCliente"+
-                " WHERE "+venta+ ".pagado = 0 ORDER BY "+pago+".fechaCobro ASC",null);
+                " WHERE "+venta+ ".pagado = 0  AND "+pago+".activo = 1 ORDER BY "+pago+".fechaCobro ASC",null);
         if(cursor.moveToFirst()){
             do {
                 DEBEN deben = new DEBEN();
@@ -319,7 +337,7 @@ public class SQLCobrale  extends SQLiteOpenHelper{
                 listaDeben.add(deben);
             }while (cursor.moveToNext());
         }
-        for (int i = 0 ; i<listaDeben.size() ; i++) {
+        /*for (int i = 0 ; i<listaDeben.size() ; i++) {
             listaBuena.add(listaDeben.get(i));
             for(int n = i+1 ; n < listaDeben.size() ; n++){
                 if(listaBuena.get(i).getId() == listaDeben.get(n).getId()) {
@@ -328,23 +346,31 @@ public class SQLCobrale  extends SQLiteOpenHelper{
                 }
             }
         }
-        return listaBuena;
+        return listaBuena;*/
+        return listaDeben;
     }
 
-    public ArrayList<DEBEN> getDebenHoy(String fecha){
+    public ArrayList<DEBEN> getDebenHoy(String fecha) throws ParseException {
         SQLiteDatabase db = getWritableDatabase();
         ArrayList<DEBEN> listaDeben = new ArrayList<>();
-        Cursor cursor = db.rawQuery("SELECT "+clienteT+".nombre, "+pago+".resto, "+pago+".fechaCobro, "+pago+".idPago FROM "+pago+
+        SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy");
+        Date fechaHoy = format.parse(fecha);
+        Date fechaResta = null;
+        long dif = 0;
+        Cursor cursor = db.rawQuery("SELECT "+clienteT+".nombre, "+pago+".resto, "+pago+".fechaCobro, "+pago+".idPago,"+pago+".total FROM "+pago+
                 " INNER JOIN "+ venta +" ON "+pago+ ".idPago = "+venta+".idPagos"+
                 " INNER JOIN "+ clienteT +" ON "+ venta + ".idCliente = "+clienteT +".idCliente"+
-                " WHERE "+venta+ ".pagado = 0 AND "+pago+".fechaCobro = '"+fecha+"'",null);
+                " WHERE "+venta+ ".pagado = 0 AND "+pago+".fechaCobro <= '"+fecha+"' AND "+pago+".activo = 1",null);
         if(cursor.moveToFirst()){
             do {
                 DEBEN deben = new DEBEN();
                 deben.setNombre(cursor.getString(0));
                 deben.setResto(cursor.getString(1));
-                deben.setFecha("Debe pagar hoy");
+                fechaResta = format.parse(cursor.getString(2));
+                dif=fechaHoy.getTime() - fechaResta.getTime();
+                deben.setFecha("Tiene "+ dif / (1000 * 60 * 60 * 24)+" días de retraso");
                 deben.setId(cursor.getInt(3));
+                deben.setTotal(cursor.getDouble(4));
                 listaDeben.add(deben);
             }while (cursor.moveToNext());
         }

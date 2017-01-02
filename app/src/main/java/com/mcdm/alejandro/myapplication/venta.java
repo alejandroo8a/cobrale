@@ -381,6 +381,7 @@ public class venta extends AppCompatActivity {
         p.setTotal(subTotal);
         p.setFechaPago(txtFecha.getText().toString());
         p.setFechaCobro(fechaCobro);
+        p.setActivo(true);
         p.setSincronizado(false);
         db.insertPago(idPago,p,venta.this);
     }

@@ -119,7 +119,9 @@ public class deben extends Fragment {
                 pago.setTotal(total);
                 pago.setFechaCobro(fechaCobro);
                 pago.setFechaPago(fechaPago);
+                pago.setActivo(true);
                 pago.setSincronizado(false);
+                db.updatePago(listaDeben.get(posicion).getId(),getContext());
                 db.insertPago(listaDeben.get(posicion).getId(),pago,getContext());
                 if(resto==0.0)
                     db.updateVenta(listaDeben.get(posicion).getId(),getContext());
