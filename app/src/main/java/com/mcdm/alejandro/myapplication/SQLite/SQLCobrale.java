@@ -22,6 +22,7 @@ import com.mcdm.alejandro.myapplication.clases.ventas;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
@@ -150,11 +151,13 @@ public class SQLCobrale  extends SQLiteOpenHelper{
     public void insertPago(Integer idPago, pagos pay,Context context){
         SQLiteDatabase db = getWritableDatabase();
         ContentValues p = new ContentValues();
+        String fecha = "";
         p.put("idPago",idPago);
         p.put("monto",pay.getMonto());
         p.put("resto",pay.getResto());
         p.put("total",pay.getTotal());
-        p.put("fechaCobro",pay.getFechaCobro());
+        fecha = cambiarFechaGuardar(pay.getFechaCobro());
+        p.put("fechaCobro",fecha);
         p.put("fechaPago",pay.getFechaPago());
         p.put("activo",pay.isActivo());
         p.put("sincronizado",pay.isSincronizado());
@@ -170,10 +173,12 @@ public class SQLCobrale  extends SQLiteOpenHelper{
     public void insertVenta(ventas ven, Context context){
         SQLiteDatabase db = getWritableDatabase();
         ContentValues sell = new ContentValues();
+        String fecha = "";
         sell.put("idCliente",ven.getIdCliente());
         sell.put("idProductos",ven.getIdProductos());
         sell.put("idPagos",ven.getIdPagos());
-        sell.put("fechaVenta",ven.getFechaVenta());
+        fecha = cambiarFechaGuardar(ven.getFechaVenta());
+        sell.put("fechaVenta",fecha);
         sell.put("prendasTotal",ven.getPrendasTotal());
         sell.put("total",ven.getTotal());
         sell.put("diaSemana",ven.getDiaSemana());
@@ -321,7 +326,7 @@ public class SQLCobrale  extends SQLiteOpenHelper{
     public ArrayList<DEBEN> getDeben(){
         SQLiteDatabase db = getWritableDatabase();
         ArrayList<DEBEN> listaDeben = new ArrayList<>();
-        //ArrayList<DEBEN> listaBuena = new ArrayList<>();
+        String fecha = "";
         Cursor cursor = db.rawQuery("SELECT "+clienteT+".nombre, "+pago+".resto, "+pago+".fechaCobro, "+pago+".idPago, "+pago+".total FROM "+pago+
                 " INNER JOIN "+ venta +" ON "+pago+ ".idPago = "+venta+".idPagos"+
                 " INNER JOIN "+ clienteT +" ON "+ venta + ".idCliente = "+clienteT +".idCliente"+
@@ -331,36 +336,31 @@ public class SQLCobrale  extends SQLiteOpenHelper{
                 DEBEN deben = new DEBEN();
                 deben.setNombre(cursor.getString(0));
                 deben.setResto(cursor.getString(1));
-                deben.setFecha(cursor.getString(2));
+                fecha = cambiarFechaMostrar(cursor.getString(2));
+                deben.setFecha(fecha);
                 deben.setId(cursor.getInt(3));
                 deben.setTotal(cursor.getDouble(4));
                 listaDeben.add(deben);
             }while (cursor.moveToNext());
         }
-        /*for (int i = 0 ; i<listaDeben.size() ; i++) {
-            listaBuena.add(listaDeben.get(i));
-            for(int n = i+1 ; n < listaDeben.size() ; n++){
-                if(listaBuena.get(i).getId() == listaDeben.get(n).getId()) {
-                    listaDeben.remove(n);
-                    n--;
-                }
-            }
-        }
-        return listaBuena;*/
         return listaDeben;
     }
 
-    public ArrayList<DEBEN> getDebenHoy(String fecha) throws ParseException {
+    public ArrayList<DEBEN> getDebenHoy() throws ParseException {
+        String fecha ="";
         SQLiteDatabase db = getWritableDatabase();
         ArrayList<DEBEN> listaDeben = new ArrayList<>();
-        SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy");
+        SimpleDateFormat format = new SimpleDateFormat("yyyy/MM/dd");
+        Calendar calendar = Calendar.getInstance();
+        calendar.add(Calendar.DAY_OF_YEAR, 1);
+        fecha = format.format(calendar.getTime());
         Date fechaHoy = format.parse(fecha);
         Date fechaResta = null;
         long dif = 0;
         Cursor cursor = db.rawQuery("SELECT "+clienteT+".nombre, "+pago+".resto, "+pago+".fechaCobro, "+pago+".idPago,"+pago+".total FROM "+pago+
                 " INNER JOIN "+ venta +" ON "+pago+ ".idPago = "+venta+".idPagos"+
                 " INNER JOIN "+ clienteT +" ON "+ venta + ".idCliente = "+clienteT +".idCliente"+
-                " WHERE "+venta+ ".pagado = 0 AND "+pago+".fechaCobro <= '"+fecha+"' AND "+pago+".activo = 1",null);
+                " WHERE pagos.fechaCobro >= '2000/01/01' AND pagos.fechaCobro <= '"+fecha+"' AND "+venta+ ".pagado = 0 AND "+pago+".activo = 1",null);
         if(cursor.moveToFirst()){
             do {
                 DEBEN deben = new DEBEN();
@@ -387,6 +387,25 @@ public class SQLCobrale  extends SQLiteOpenHelper{
             }while (cursor.moveToNext());
         }
         return listaRopa;
+    }
+
+
+    private String cambiarFechaGuardar(String fecha){
+        String[] date = new String[3];
+        date[0] = fecha.substring(0,2);
+        date[1] = fecha.substring(3,5);
+        date[2] = fecha.substring(6);
+        fecha = date[2]+"/"+date[1]+"/"+date[0];
+        return fecha;
+    }
+
+    private String cambiarFechaMostrar(String fecha){
+        String[] date = new String[3];
+        date[0] = fecha.substring(0,4);
+        date[1] = fecha.substring(5,7);
+        date[2] = fecha.substring(8);
+        fecha = date[2]+"/"+date[1]+"/"+date[0];
+        return fecha;
     }
 }
 

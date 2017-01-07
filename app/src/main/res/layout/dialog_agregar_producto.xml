@@ -38,6 +38,7 @@
         android:singleLine="true"
         android:layout_marginRight="10dp"
         android:layout_marginLeft="10dp"
+        android:maxLength="50"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
 
@@ -60,7 +61,7 @@
             android:singleLine="true"
             android:textAlignment="viewEnd"
             android:layout_width="75dp"
-            android:maxLength="4"
+            android:maxLength="5"
             android:inputType="numberDecimal"
             android:layout_height="wrap_content" />
 

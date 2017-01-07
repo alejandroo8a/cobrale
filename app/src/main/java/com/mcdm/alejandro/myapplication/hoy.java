@@ -18,6 +18,7 @@ import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.mcdm.alejandro.myapplication.SQLite.SQLCobrale;
 import com.mcdm.alejandro.myapplication.adapter.adapter_deben;
@@ -49,15 +50,13 @@ public class hoy extends Fragment {
     private ArrayList<DEBEN> listaDeben;
     private adapter_deben adapter_deben;
     private SQLCobrale db;
-    private String fecha="";
     private String fechaCobro="", fechaPago="";
     private Double total = 0.0, resto = 0.0;
 
     public hoy() {
         // Required empty public constructor
+        listaDeben = new ArrayList<>();
     }
-
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -72,8 +71,8 @@ public class hoy extends Fragment {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        listaDeben = new ArrayList<>();
         db = new SQLCobrale(getContext());
+        listaDeben = new ArrayList<>();
         try {
             llenarListaDeben();
         } catch (ParseException e) {
@@ -88,12 +87,11 @@ public class hoy extends Fragment {
         });
     }
 
-    private void llenarListaDeben() throws ParseException {
-        fechaHoy();
-        listaDeben = db.getDebenHoy(fecha);
+    public void llenarListaDeben() throws ParseException {
+        listaDeben = db.getDebenHoy();
     }
 
-    private void llenarGrid(){
+    public void llenarGrid(){
         if(listaDeben.size()>0){
             imgDescanso.setVisibility(View.INVISIBLE);
             txtNoHayCobrar.setVisibility(View.INVISIBLE);
@@ -105,6 +103,7 @@ public class hoy extends Fragment {
     private void crearDialogPago(final int posicion){
         AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
         LayoutInflater inflater = getActivity().getLayoutInflater();
+        final double comparar =Double.parseDouble(listaDeben.get(posicion).getResto());
         final View view = inflater.inflate(R.layout.dialog_abono,null);
         final EditText edtCantidadAbono = (EditText)view.findViewById(R.id.edtCantidadAbono);
         spPlazoAbono = (Spinner)view.findViewById(R.id.spPlazoAbono);
@@ -114,44 +113,97 @@ public class hoy extends Fragment {
         builder.setPositiveButton("Abonar", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
-                fechaHoy();
-                sumarFecha();
-                resto = Double.parseDouble(listaDeben.get(posicion).getResto())-Double.parseDouble(edtCantidadAbono.getText().toString());
-                total=listaDeben.get(posicion).getTotal();
-                pagos pago = new pagos();
-                pago.setMonto(Double.parseDouble(edtCantidadAbono.getText().toString()));
-                pago.setResto(resto);
-                pago.setTotal(total);
-                pago.setFechaCobro(fechaCobro);
-                pago.setFechaPago(fechaPago);
-                pago.setActivo(true);
-                pago.setSincronizado(false);
-                db.updatePago(listaDeben.get(posicion).getId(),getContext());
-                db.insertPago(listaDeben.get(posicion).getId(),pago,getContext());
-                if(resto==0.0)
-                    db.updateVenta(listaDeben.get(posicion).getId(),getContext());
-                listaDeben.clear();
-                try {
-                    llenarListaDeben();
-                } catch (ParseException e) {
-                    e.printStackTrace();
-                }
-                if(listaDeben.size()>0)
-                    llenarGrid();
-                else{
-                    imgDescanso.setVisibility(View.VISIBLE);
-                    txtNoHayCobrar.setVisibility(View.VISIBLE);
-                    grdCobrarHoy.setVisibility(View.INVISIBLE);
-                }
+
             }
         })
-                .setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
+        .setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
 
                     }
-                })
-                .show();
+                });
+        final AlertDialog alert = builder.create();
+        alert.show();
+        alert.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (edtCantidadAbono.getText().toString().length() > 0) {
+                    if(Double.parseDouble(edtCantidadAbono.getText().toString())<=comparar) {
+                        if(spPlazoAbono.getSelectedItem().equals("Liquidar")) {
+                            if(Double.parseDouble(edtCantidadAbono.getText().toString())==comparar){
+                                sumarFecha();
+                                resto = comparar - Double.parseDouble(edtCantidadAbono.getText().toString());
+                                total = listaDeben.get(posicion).getTotal();
+                                pagos pago = new pagos();
+                                pago.setMonto(Double.parseDouble(edtCantidadAbono.getText().toString()));
+                                pago.setResto(resto);
+                                pago.setTotal(total);
+                                pago.setFechaCobro(fechaCobro);
+                                pago.setFechaPago(fechaPago);
+                                pago.setActivo(true);
+                                pago.setSincronizado(false);
+                                db.updatePago(listaDeben.get(posicion).getId(), getContext());
+                                db.insertPago(listaDeben.get(posicion).getId(), pago, getContext());
+                                if (resto == 0.0)
+                                    db.updateVenta(listaDeben.get(posicion).getId(), getContext());
+                                listaDeben.clear();
+                                try {
+                                    llenarListaDeben();
+                                } catch (ParseException e) {
+                                    e.printStackTrace();
+                                }
+                                if (listaDeben.size() > 0)
+                                    llenarGrid();
+                                else {
+                                    imgDescanso.setVisibility(View.VISIBLE);
+                                    txtNoHayCobrar.setVisibility(View.VISIBLE);
+                                    grdCobrarHoy.setVisibility(View.INVISIBLE);
+                                }
+                                alert.dismiss();
+                            }
+                                else{
+                                Toast.makeText(getContext(), "El abono debe de ser igual a la cantidad a liquidar", Toast.LENGTH_SHORT).show();
+                            }
+                        }else{
+                            sumarFecha();
+                            resto = comparar - Double.parseDouble(edtCantidadAbono.getText().toString());
+                            total = listaDeben.get(posicion).getTotal();
+                            pagos pago = new pagos();
+                            pago.setMonto(Double.parseDouble(edtCantidadAbono.getText().toString()));
+                            pago.setResto(resto);
+                            pago.setTotal(total);
+                            pago.setFechaCobro(fechaCobro);
+                            pago.setFechaPago(fechaPago);
+                            pago.setActivo(true);
+                            pago.setSincronizado(false);
+                            db.updatePago(listaDeben.get(posicion).getId(), getContext());
+                            db.insertPago(listaDeben.get(posicion).getId(), pago, getContext());
+                            if (resto == 0.0)
+                                db.updateVenta(listaDeben.get(posicion).getId(), getContext());
+                            listaDeben.clear();
+                            try {
+                                llenarListaDeben();
+                            } catch (ParseException e) {
+                                e.printStackTrace();
+                            }
+                            if (listaDeben.size() > 0)
+                                llenarGrid();
+                            else {
+                                imgDescanso.setVisibility(View.VISIBLE);
+                                txtNoHayCobrar.setVisibility(View.VISIBLE);
+                                grdCobrarHoy.setVisibility(View.INVISIBLE);
+                            }
+                            reiniciar();
+                            alert.dismiss();
+                        }
+                    }else
+                        Toast.makeText(getContext(), "El abono no puede ser mayor al resto del pago", Toast.LENGTH_SHORT).show();
+                }else
+                    Toast.makeText(getContext(), "Agregue la cantidad a abonar", Toast.LENGTH_SHORT).show();
+            }
+
+        });
+
     }
 
     private void sumarFecha(){
@@ -184,11 +236,11 @@ public class hoy extends Fragment {
         Log.d(TAG, "FECHA A COBRAR "+fechaCobro);
     }
 
-    private void fechaHoy(){
-        SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy");
-        Calendar calendar = Calendar.getInstance();
-        fecha=format.format(calendar.getTime());
+    private void reiniciar(){
+        cobroHoy hot = new cobroHoy();
+        hot.iniciarTabs();
     }
+
 
     // TODO: Rename method, update argument and hook method into UI event
     public void onButtonPressed(Uri uri) {
@@ -207,6 +259,7 @@ public class hoy extends Fragment {
         super.onDetach();
         mListener = null;
     }
+
 
     /**
      * This interface must be implemented by activities that contain this

@@ -12,7 +12,7 @@
         android:layout_height="match_parent"></GridView>
     <TextView
         android:id="@+id/txtDeben"
-        android:textSize="45dp"
+        android:textSize="35dp"
         android:text="Nadie debe"
         android:layout_gravity="center"
         android:layout_width="wrap_content"

@@ -55,6 +55,7 @@ public class deben extends Fragment {
 
     public deben() {
         // Required empty public constructor
+        listaDeben = new ArrayList<>();
     }
 
 
@@ -81,15 +82,14 @@ public class deben extends Fragment {
                 crearDialogPago(i);
             }
         });
-
     }
 
-    private void llenarListaDeben(){
+    public void llenarListaDeben(){
         listaDeben = db.getDeben();
         txtDeben.setVisibility(View.VISIBLE);
     }
 
-    private void llenarDatagridDeben(){
+    public void llenarDatagridDeben(){
         if(listaDeben.size()>0){
             txtDeben.setVisibility(View.INVISIBLE);
             adapter_deben = new adapter_deben(getContext(),listaDeben);
@@ -101,6 +101,7 @@ public class deben extends Fragment {
         AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
         LayoutInflater inflater = getActivity().getLayoutInflater();
         final View view = inflater.inflate(R.layout.dialog_abono,null);
+        final double comparar =Double.parseDouble(listaDeben.get(posicion).getResto());
         final EditText edtCantidadAbono = (EditText)view.findViewById(R.id.edtCantidadAbono);
         spPlazoAbono = (Spinner)view.findViewById(R.id.spPlazoAbono);
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(getContext(), R.array.Plazo, R.layout.spinner_item);
@@ -109,25 +110,7 @@ public class deben extends Fragment {
         builder.setPositiveButton("Abonar", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
-                fechaHoy();
-                sumarFecha();
-                resto = Double.parseDouble(listaDeben.get(posicion).getResto())-Double.parseDouble(edtCantidadAbono.getText().toString());
-                total=listaDeben.get(posicion).getTotal();
-                pagos pago = new pagos();
-                pago.setMonto(Double.parseDouble(edtCantidadAbono.getText().toString()));
-                pago.setResto(resto);
-                pago.setTotal(total);
-                pago.setFechaCobro(fechaCobro);
-                pago.setFechaPago(fechaPago);
-                pago.setActivo(true);
-                pago.setSincronizado(false);
-                db.updatePago(listaDeben.get(posicion).getId(),getContext());
-                db.insertPago(listaDeben.get(posicion).getId(),pago,getContext());
-                if(resto==0.0)
-                    db.updateVenta(listaDeben.get(posicion).getId(),getContext());
-                listaDeben.clear();
-                llenarListaDeben();
-                llenarDatagridDeben();
+
             }
         })
         .setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
@@ -135,8 +118,68 @@ public class deben extends Fragment {
             public void onClick(DialogInterface dialogInterface, int i) {
 
             }
-        })
-        .show();
+        });
+        final AlertDialog alertDialog = builder.create();
+        alertDialog.show();
+        alertDialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(edtCantidadAbono.getText().toString().length() > 0){
+                    if(Double.parseDouble(edtCantidadAbono.getText().toString())<=comparar) {
+                        if(spPlazoAbono.getSelectedItem().equals("Liquidar")) {
+                            if(Double.parseDouble(edtCantidadAbono.getText().toString())==comparar){
+                                fechaHoy();
+                                sumarFecha();
+                                resto = comparar-Double.parseDouble(edtCantidadAbono.getText().toString());
+                                total=listaDeben.get(posicion).getTotal();
+                                pagos pago = new pagos();
+                                pago.setMonto(Double.parseDouble(edtCantidadAbono.getText().toString()));
+                                pago.setResto(resto);
+                                pago.setTotal(total);
+                                pago.setFechaCobro(fechaCobro);
+                                pago.setFechaPago(fechaPago);
+                                pago.setActivo(true);
+                                pago.setSincronizado(false);
+                                db.updatePago(listaDeben.get(posicion).getId(),getContext());
+                                db.insertPago(listaDeben.get(posicion).getId(),pago,getContext());
+                                if(resto==0.0)
+                                    db.updateVenta(listaDeben.get(posicion).getId(),getContext());
+                                listaDeben.clear();
+                                llenarListaDeben();
+                                llenarDatagridDeben();
+                                alertDialog.dismiss();
+                            }
+                            else{
+                                Toast.makeText(getContext(), "El abono debe de ser igual a la cantidad a liquidar", Toast.LENGTH_SHORT).show();
+                            }
+                        }else{
+                            fechaHoy();
+                            sumarFecha();
+                            resto = comparar-Double.parseDouble(edtCantidadAbono.getText().toString());
+                            total=listaDeben.get(posicion).getTotal();
+                            pagos pago = new pagos();
+                            pago.setMonto(Double.parseDouble(edtCantidadAbono.getText().toString()));
+                            pago.setResto(resto);
+                            pago.setTotal(total);
+                            pago.setFechaCobro(fechaCobro);
+                            pago.setFechaPago(fechaPago);
+                            pago.setActivo(true);
+                            pago.setSincronizado(false);
+                            db.updatePago(listaDeben.get(posicion).getId(),getContext());
+                            db.insertPago(listaDeben.get(posicion).getId(),pago,getContext());
+                            if(resto==0.0)
+                                db.updateVenta(listaDeben.get(posicion).getId(),getContext());
+                            listaDeben.clear();
+                            llenarListaDeben();
+                            llenarDatagridDeben();
+                            alertDialog.dismiss();
+                        }
+                    }else
+                        Toast.makeText(getContext(), "El abono no puede ser mayor al resto del pago", Toast.LENGTH_SHORT).show();
+                }else
+                    Toast.makeText(getContext(), "Agregue la cantidad a abonar", Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     private void sumarFecha(){
@@ -175,13 +218,6 @@ public class deben extends Fragment {
         fechaPago = format.format(calendar.getTime());
     }
 
-
-
-
-
-
-
-
     // TODO: Rename method, update argument and hook method into UI event
     public void onButtonPressed(Uri uri) {
         if (mListener != null) {
@@ -189,15 +225,16 @@ public class deben extends Fragment {
         }
     }
 
+
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
+        Log.d(TAG, "DESTRUYENDO ");
     }
 
     @Override
     public void onDetach() {
         super.onDetach();
-        mListener = null;
     }
     /*adapterProducto = new adapter_producto(getApplicationContext(), listaPrendas);
     params.height += 100;

@@ -374,7 +374,7 @@ public class venta extends AppCompatActivity {
         db.insertPrendas(idProducto, listaPrendas,this);
     }
 
-    private void insertarPago(){
+    private void insertarPago() {
         pagos p = new pagos();
         p.setMonto(abono);
         p.setResto(Double.valueOf(txtTotal.getText().toString()));
@@ -409,6 +409,8 @@ public class venta extends AppCompatActivity {
         for (int i = 0 ; i<listaPrendas.size() ; i++)
             totalPrendas+=listaPrendas.get(i).getCantidad();
     }
+
+
 
 }
 

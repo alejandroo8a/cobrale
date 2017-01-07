@@ -29,11 +29,6 @@ import java.util.List;
 public class cobroHoy extends Fragment {
 
     private OnFragmentInteractionListener mListener;
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
-    private static final String ARG_PARAM3 = "param3";
-    private static final String ARG_PARAM4 = "param4";
-    private static final String ARG_PARAM5 = "param5";
     static private final String TAG ="cobroHoy";
     ViewPager viewPager;
     TabLayout tabLayout;
@@ -41,20 +36,6 @@ public class cobroHoy extends Fragment {
     public cobroHoy() {
         // Required empty public constructor
     }
-
-
-    public static cobroHoy newInstance(String param1, String param2, String param3, String param4, String param5){
-        cobroHoy fragment = new cobroHoy();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1,param1);
-        args.putString(ARG_PARAM2,param2);
-        args.putString(ARG_PARAM3,param3);
-        args.putString(ARG_PARAM4,param4);
-        args.putString(ARG_PARAM5,param5);
-        fragment.setArguments(args);
-        return fragment;
-    }
-
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -108,8 +89,11 @@ public class cobroHoy extends Fragment {
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-
         super.onActivityCreated(savedInstanceState);
+        iniciarTabs();
+    }
+
+    public void iniciarTabs(){
         //Add tabs icon with setIcon() or simple text with .setText()
         tabLayout.addTab(tabLayout.newTab().setText("HOY").setIcon(R.drawable.ic_hoy));
         tabLayout.addTab(tabLayout.newTab().setText("DEBEN").setIcon(R.drawable.ic_deben));
