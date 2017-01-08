@@ -149,7 +149,31 @@ public class venta extends AppCompatActivity {
         //SE UTILIZA PARA QUE NO SE CANCELE AL MOMENTO DE PRECIONAR ALGÚN BOTON
         final AlertDialog dialog = builder.create();
         dialog.show();
+        //NO SE PUEDE UN CLIC LARGO EN EL SPINNER
+        /*spTipoPrenda.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View view) {
+                final String prendaEliminar = spTipoPrenda.getItemAtPosition(1).toString();
+                AlertDialog.Builder alert = new AlertDialog.Builder(venta.this);
+                alert.setTitle("Eliminar")
+                        .setMessage("¿Desea eliminar "+spTipoPrenda.getItemAtPosition(1)+" ?")
+                        .setPositiveButton("Eliminar", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                db.deleteRopa(prendaEliminar,getApplicationContext());
+                                llenarSpinnerRopa();
+                            }
+                        })
+                        .setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
 
+                            }
+                        })
+                        .show();
+                return true;
+            }
+        });*/
         dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(new View.OnClickListener()
         {
             @Override
@@ -217,6 +241,7 @@ public class venta extends AppCompatActivity {
         })
         .show();
     }
+
     private void llenarSpinnerRopa(){
         listaRopa = null;
         listaRopa = db.getRopa();
@@ -227,13 +252,17 @@ public class venta extends AppCompatActivity {
     }
 
     public void hacerVenta(View v){
-        obtenerIdProducto();
-        obtenerIdPago();
-        insertarPrendas();
-        sumarFecha();
-        insertarPago();
-        insertarVenta();
-        finish();
+        if(Double.parseDouble(edtAbono.getText().toString()) > subTotal)
+            Toast.makeText(this, "El abono no puede ser mayor al total", Toast.LENGTH_SHORT).show();
+        else{
+            obtenerIdProducto();
+            obtenerIdPago();
+            insertarPrendas();
+            sumarFecha();
+            insertarPago();
+            insertarVenta();
+            finish();
+        }
     }
 
     private void SubTotal(double sub,int cantidad, boolean operacion){

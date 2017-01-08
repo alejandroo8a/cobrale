@@ -225,6 +225,16 @@ public class SQLCobrale  extends SQLiteOpenHelper{
         }
     }
 
+    public void deleteRopa(String nombre, Context context){
+        SQLiteDatabase db = getWritableDatabase();
+        try{
+            db.delete(ropa,"nombre='"+nombre+"'", null);
+            Toast.makeText(context, nombre+" se eliminó correctamente", Toast.LENGTH_SHORT).show();
+        }catch (SQLException ex) {
+            Toast.makeText(context, "No se pudo eliminar la ropa: " + ex.getMessage(), Toast.LENGTH_SHORT).show();
+        }
+    }
+
 
     //ACTUALIZAR*********************************
     public void updateCliente(cliente persona, Context context){

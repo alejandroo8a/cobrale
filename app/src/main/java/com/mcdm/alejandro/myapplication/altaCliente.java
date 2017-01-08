@@ -2,7 +2,9 @@ package com.mcdm.alejandro.myapplication;
 
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.net.Uri;
 import android.support.annotation.Nullable;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -32,6 +34,7 @@ public class altaCliente extends AppCompatActivity {
 
     EditText edtNombre, edtCalle, edtColonia, edtTelefono1, edtTelefono2;
     Button btnGuardar, btnAgregarRazon, btnVenta;
+    FloatingActionButton btnLlamar;
     Spinner spRazonSocial;
 
     @Override
@@ -47,16 +50,19 @@ public class altaCliente extends AppCompatActivity {
         btnGuardar = (Button)findViewById(R.id.btnGuardar);
         btnAgregarRazon = (Button)findViewById(R.id.btnAgregarRazon);
         btnVenta = (Button)findViewById(R.id.btnVenta);
+        btnLlamar = (FloatingActionButton)findViewById(R.id.btnLlamar);
         spRazonSocial = (Spinner)findViewById(R.id.spRazonSocial);
         persona= new cliente();
         poblarSpinner();
         actualizar = getIntent().getBooleanExtra("ACTUALIZAR",false);
         btnVenta.setVisibility(View.INVISIBLE);
+        btnLlamar.setVisibility(View.INVISIBLE);
         if(actualizar){
             habilitarControles(false);
             btnGuardar.setText("Actualizar");
             agregarCliente(getIntent().getStringExtra("NOMBRE"));
             btnVenta.setVisibility(View.VISIBLE);
+            btnLlamar.setVisibility(View.VISIBLE);
         }
 
 
@@ -65,7 +71,7 @@ public class altaCliente extends AppCompatActivity {
     //EVENTO QUE USA EL BOTON GUARDAR
     public void guardarCliente(View v){
         if(btnGuardar.getText().toString().equals("GUARDAR")) {
-            if (edtNombre.length() == 0)
+            if (edtNombre.length() == 0 )
                 Toast.makeText(this, "Agregue un nombre al cliente", Toast.LENGTH_SHORT).show();
             else {
                 persona.setNombre(edtNombre.getText().toString());
@@ -101,6 +107,16 @@ public class altaCliente extends AppCompatActivity {
         Intent intent = new Intent(this, venta.class);
         intent.putExtra("NOMBRE",edtNombre.getText().toString());
         startActivity(intent);
+
+    }
+    
+    public void llamar(View v){
+        if(edtTelefono1.getText().length()>0){
+            Intent intent = new Intent(Intent.ACTION_CALL);
+            intent.setData(Uri.parse("tel:"+edtTelefono1.getText().toString()));
+            startActivity(intent);
+        }else
+            Toast.makeText(this, "Agregue número a marcar", Toast.LENGTH_SHORT).show();
     }
 
     private void cleanScreen(){
@@ -163,6 +179,15 @@ public class altaCliente extends AppCompatActivity {
         edtTelefono2.setEnabled(ac);
         spRazonSocial.setEnabled(ac);
         btnAgregarRazon.setEnabled(ac);
+        btnVenta.setEnabled(!ac);
+        btnLlamar.setEnabled(!ac);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        actualizar=false;
+        this.finish();
     }
 
     @Override
