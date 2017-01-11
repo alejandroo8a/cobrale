@@ -55,7 +55,7 @@ public class venta extends AppCompatActivity {
     private List<String> listaRopa;
     private String tipo, descripcion, fechaCobro="";
     private double costo,subTotal=0.0, total= 0.0, abono=0.0;
-    private Integer cantidad=0, idProducto=0, idPago=0, totalPrendas=0;
+    private Integer cantidad=0, idProducto=0, idPago=0, totalPrendas=0, id=0;
     private SharedPreferences sharedPreferences;
     private SQLCobrale db;
 
@@ -77,7 +77,7 @@ public class venta extends AppCompatActivity {
         txtFecha = (TextView)findViewById(R.id.txtFecha);
         edtAbono = (EditText)findViewById(R.id.edtAbono);
         txtClienteVenta.setText(getIntent().getStringExtra("NOMBRE"));
-
+        id=getIntent().getIntExtra("IDCLIENTE",0);
         fechaHoy();
         listaPrendas = new ArrayList<>();
         poblarSpinner();
@@ -252,8 +252,14 @@ public class venta extends AppCompatActivity {
     }
 
     public void hacerVenta(View v){
+        if(edtAbono.getText().toString().length()==0)
+            edtAbono.setText("0.0");
         if(Double.parseDouble(edtAbono.getText().toString()) > subTotal)
             Toast.makeText(this, "El abono no puede ser mayor al total", Toast.LENGTH_SHORT).show();
+        else if(listaPrendas.size()==0) {
+            Toast.makeText(this, "Agrega una prenda a vender", Toast.LENGTH_SHORT).show();
+            edtAbono.setText("");
+        }
         else{
             obtenerIdProducto();
             obtenerIdPago();
@@ -417,7 +423,7 @@ public class venta extends AppCompatActivity {
 
     private void insertarVenta(){
         ventas sell = new ventas();
-        sell.setIdCliente(1);
+        sell.setIdCliente(id);
         sell.setIdProductos(idProducto);
         sell.setIdPagos(idPago);
         sell.setFechaVenta(txtFecha.getText().toString());

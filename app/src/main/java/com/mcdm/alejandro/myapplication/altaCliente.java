@@ -105,6 +105,7 @@ public class altaCliente extends AppCompatActivity {
     //EVENTO QUE USA EL BOTON VENDER
     public void hacerVenta(View v){
         Intent intent = new Intent(this, venta.class);
+        intent.putExtra("IDCLIENTE",persona.getId());
         intent.putExtra("NOMBRE",edtNombre.getText().toString());
         startActivity(intent);
 
@@ -162,6 +163,7 @@ public class altaCliente extends AppCompatActivity {
     private void agregarCliente(String nombre){
         persona=db.getClienteDatos(nombre);
         int position = adapter.getPosition(persona.getRazonSocial());
+        persona.setId(getIntent().getIntExtra("ID",0));
         edtNombre.setText(persona.getNombre());
         edtCalle.setText(persona.getCalle());
         edtColonia.setText(persona.getColonia());

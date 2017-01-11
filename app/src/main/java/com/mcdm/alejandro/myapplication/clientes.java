@@ -28,6 +28,7 @@ import android.widget.Toast;
 import com.mcdm.alejandro.myapplication.SQLite.SQLCobrale;
 import com.mcdm.alejandro.myapplication.clases.cliente;
 
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -45,6 +46,7 @@ public class clientes extends Fragment {
     private ImageView imgClientes;
     private ListView lsClientes;
     private SQLCobrale db;
+    List<cliente> cl;
     private EditText edtBuscarCliente;
 
     private ArrayAdapter adaptador;
@@ -119,6 +121,7 @@ public class clientes extends Fragment {
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 Intent intent = new Intent(getContext(), altaCliente.class);
                 Log.d(TAG, "onItemClick: "+lsClientes.getItemAtPosition(i));
+                intent.putExtra("ID",cl.get(i).getId());
                 intent.putExtra("NOMBRE", adapterView.getItemAtPosition(i).toString());
                 intent.putExtra("ACTUALIZAR",true);
                 startActivity(intent);
@@ -177,7 +180,11 @@ public class clientes extends Fragment {
     }
 
     private void llenarLista(){
-        final List<String> clientes = db.getClientes();
+        cl = db.getClientes();
+        final List<String> clientes = new ArrayList<>();
+        for(cliente client : cl){
+            clientes.add(client.getNombre());
+        }
         if(clientes.size() ==0)
             txtLista.setVisibility(View.INVISIBLE);
         else{

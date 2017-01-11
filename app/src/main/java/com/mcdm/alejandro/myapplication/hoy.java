@@ -193,7 +193,6 @@ public class hoy extends Fragment {
                                 txtNoHayCobrar.setVisibility(View.VISIBLE);
                                 grdCobrarHoy.setVisibility(View.INVISIBLE);
                             }
-                            reiniciar();
                             alert.dismiss();
                         }
                     }else
@@ -234,11 +233,6 @@ public class hoy extends Fragment {
 
         fechaCobro = format.format(calendar.getTime());
         Log.d(TAG, "FECHA A COBRAR "+fechaCobro);
-    }
-
-    private void reiniciar(){
-        cobroHoy hot = new cobroHoy();
-        hot.iniciarTabs();
     }
 
 

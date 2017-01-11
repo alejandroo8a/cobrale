@@ -299,13 +299,16 @@ public class SQLCobrale  extends SQLiteOpenHelper{
         return razones;
     }
 
-    public List <String> getClientes(){
+    public List <cliente> getClientes(){
         SQLiteDatabase db = getWritableDatabase();
-        List<String> clientes = new ArrayList<>();
-        Cursor cursor = db.rawQuery("SELECT nombre FROM "+clienteT+" ORDER BY nombre ASC",null);
+        List<cliente> clientes = new ArrayList<>();
+        Cursor cursor = db.rawQuery("SELECT idCliente, nombre FROM "+clienteT+" ORDER BY nombre ASC",null);
         if(cursor.moveToFirst()){
             do{
-                clientes.add(cursor.getString(0));
+                cliente cl = new cliente();
+                cl.setId(cursor.getInt(0));
+                cl.setNombre(cursor.getString(1));
+                clientes.add(cl);
             }while(cursor.moveToNext());
         }
         cursor.close();
