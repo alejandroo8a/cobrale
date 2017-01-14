@@ -249,6 +249,7 @@ public class SQLCobrale  extends SQLiteOpenHelper{
         actualizarPersona.put("telefono1",persona.getTelefono1());
         actualizarPersona.put("telefono2",persona.getTelefono2());
         actualizarPersona.put("razonSocial",persona.getRazonSocial());
+        actualizarPersona.put("sincronizado",0);
         try{
             db.update(clienteT,actualizarPersona,"idCliente="+persona.getId(),null);
             Toast.makeText(context, "Se actualizó el cliente", Toast.LENGTH_SHORT).show();
@@ -444,5 +445,36 @@ public class SQLCobrale  extends SQLiteOpenHelper{
         }
         return clientes;
     }
-}
 
+
+
+    //RESPALDOS
+    public List<cliente> getCliente(Context context){
+        SQLiteDatabase db = getWritableDatabase();
+        List<cliente> clientes = new ArrayList<>();
+        Cursor cursor = db.rawQuery("SELECT * FROM "+clienteT+" WHERE sincronizado = 0",null);
+        if(cursor.moveToFirst())
+            do{
+                cliente cl = new cliente();
+                cl.setId(cursor.getInt(0));
+                cl.setNombre(cursor.getString(1));
+                cl.setCalle(cursor.getString(2));
+                cl.setColonia(cursor.getString(3));
+                cl.setTelefono1(cursor.getString(4));
+                cl.setTelefono2(cursor.getString(5));
+                cl.setActivo(cursor.getInt(6)>0);
+                cl.setRazonSocial(cursor.getString(7));
+                cl.setSincronizado(true);
+                clientes.add(cl);
+            }while (cursor.moveToNext());
+        ContentValues sincronizar = new ContentValues();
+        sincronizar.put("sincronizado",1);
+        try{
+            db.update(clienteT,sincronizar,null,null);
+        }catch (SQLiteException ex){
+            Toast.makeText(context, "Error al sincronizar: "+ex.getMessage(), Toast.LENGTH_SHORT).show();
+            return null;
+        }
+        return clientes;
+    }
+}

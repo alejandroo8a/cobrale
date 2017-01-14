@@ -63,4 +63,15 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
 
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/btnSincronizar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|start"
+        android:src="@drawable/sync"
+        app:backgroundTint="#03A9F4"
+        android:layout_marginBottom="10dp"
+        android:layout_marginLeft="10dp"
+        />
+
 </FrameLayout>

@@ -21,8 +21,19 @@ public class cliente {
 
     }
 
-    public cliente(Integer id, String nombre, String calle,String colonia, String telefono1, String telefono2,String razonSocial, boolean activo, boolean sincronizado) {
+    public cliente(Integer id, String nombre, String calle,String colonia, String telefono1, String telefono2,boolean activo, String razonSocial,  boolean sincronizado) {
         this.id=id;
+        this.nombre = nombre;
+        this.calle = calle;
+        this.colonia =colonia;
+        this.telefono1 = telefono1;
+        this.telefono2 = telefono2;
+        this.razonSocial =razonSocial;
+        this.activo = activo;
+        this.sincronizado = sincronizado;
+    }
+
+    public cliente(String nombre, String calle,String colonia, String telefono1, String telefono2,boolean activo, String razonSocial,  boolean sincronizado) {
         this.nombre = nombre;
         this.calle = calle;
         this.colonia =colonia;
@@ -104,4 +115,6 @@ public class cliente {
     public void setSincronizado(boolean sincronizado) {
         this.sincronizado = sincronizado;
     }
+
+
 }

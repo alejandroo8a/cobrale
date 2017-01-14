@@ -26,6 +26,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.mcdm.alejandro.myapplication.SQLite.SQLCobrale;
+import com.mcdm.alejandro.myapplication.SQLite.firebase;
 import com.mcdm.alejandro.myapplication.clases.cliente;
 
 import java.util.ArrayList;
@@ -41,7 +42,7 @@ import java.util.List;
 public class clientes extends Fragment {
 
     private final String TAG = "clientes";
-    private FloatingActionButton btnAgregarCliente;
+    private FloatingActionButton btnAgregarCliente,btnSincronizar;
     private TextView txtLista, txtCliente;
     private ImageView imgClientes;
     private ListView lsClientes;
@@ -63,6 +64,7 @@ public class clientes extends Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_clientes, container, false);
         btnAgregarCliente = (FloatingActionButton)view.findViewById(R.id.btnAgregarCliente);
+        btnSincronizar = (FloatingActionButton)view.findViewById(R.id.btnSincronizar);
         txtLista = (TextView)view.findViewById(R.id.txtLista);
         txtCliente = (TextView)view.findViewById(R.id.txtCliente);
         imgClientes = (ImageView)view.findViewById(R.id.imgClientes);
@@ -113,6 +115,14 @@ public class clientes extends Fragment {
             public void onClick(View view) {
                 Intent intent = new Intent(getContext(), altaCliente.class);
                 startActivity(intent);
+            }
+        });
+
+        btnSincronizar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                firebase fb = new firebase(getContext());
+                fb.guardarClientes();
             }
         });
 
