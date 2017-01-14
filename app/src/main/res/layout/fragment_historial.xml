@@ -1,10 +1,21 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="com.mcdm.alejandro.myapplication.historial">
 
     <!-- TODO: Update blank fragment layout -->
+    <GridView
+        android:id="@+id/grdDebenHistorial"
+        android:layout_marginTop="75dp"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"></GridView>
+    <TextView
+        android:id="@+id/txtDebenHistorial"
+        android:textSize="35dp"
+        android:text="Nadie ha comprado"
+        android:layout_gravity="center"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
 
-
-</RelativeLayout>
+</FrameLayout>

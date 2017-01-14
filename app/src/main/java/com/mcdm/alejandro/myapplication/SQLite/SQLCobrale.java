@@ -14,6 +14,7 @@ import android.util.Log;
 import android.widget.Toast;
 
 import com.mcdm.alejandro.myapplication.clases.DEBEN;
+import com.mcdm.alejandro.myapplication.clases.HISTORIAL;
 import com.mcdm.alejandro.myapplication.clases.cliente;
 import com.mcdm.alejandro.myapplication.clases.pagos;
 import com.mcdm.alejandro.myapplication.clases.prendas;
@@ -27,7 +28,9 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by alejandro on 7/12/16.
@@ -402,7 +405,6 @@ public class SQLCobrale  extends SQLiteOpenHelper{
         return listaRopa;
     }
 
-
     private String cambiarFechaGuardar(String fecha){
         String[] date = new String[3];
         date[0] = fecha.substring(0,2);
@@ -419,6 +421,28 @@ public class SQLCobrale  extends SQLiteOpenHelper{
         date[2] = fecha.substring(8);
         fecha = date[2]+"/"+date[1]+"/"+date[0];
         return fecha;
+    }
+
+    public ArrayList<HISTORIAL> getHistorial(){
+        SQLiteDatabase db = getWritableDatabase();
+        ArrayList<HISTORIAL> clientes = new ArrayList<>();
+        Map<Integer,String > filtro = new HashMap<>();
+        Cursor cursor = db.rawQuery("SELECT ventas.idCliente, cliente.nombre FROM "+venta+
+                " INNER JOIN "+clienteT+" ON ventas.idCliente = cliente.idCliente"+
+                " ORDER BY cliente.nombre ASC", null);
+        if(cursor.moveToFirst()){
+            do {
+                if(!filtro.containsKey(cursor.getInt(0))){
+                    filtro.put(cursor.getInt(0),cursor.getString(1));
+                    HISTORIAL cl = new HISTORIAL();
+                    cl.setId(cursor.getInt(0));
+                    cl.setNombre(cursor.getString(1));
+                    clientes.add(cl);
+                }
+
+            }while (cursor.moveToNext());
+        }
+        return clientes;
     }
 }
 
