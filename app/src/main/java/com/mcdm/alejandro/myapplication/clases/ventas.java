@@ -21,14 +21,13 @@ public class ventas {
 
     }
 
-    public ventas(Integer idCliente, Integer idProductos, Integer idPagos, String fechaVenta, String prendasTotal, String plazo, String diaSemana,double total, boolean pagado, boolean sincronizado) {
-        this.idCliente = idCliente;
+    public ventas(Integer idProductos, Integer idPagos, String fechaVenta, String prendasTotal, String plazo, String diaSemana, double total, boolean pagado, boolean sincronizado) {
         this.idProductos = idProductos;
         this.idPagos = idPagos;
         this.fechaVenta = fechaVenta;
         this.prendasTotal = prendasTotal;
-        this.plazo =plazo;
-        this.diaSemana =diaSemana;
+        this.plazo = plazo;
+        this.diaSemana = diaSemana;
         this.total = total;
         this.pagado = pagado;
         this.sincronizado = sincronizado;

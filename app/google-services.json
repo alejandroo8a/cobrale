@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "52546776217",
+    "firebase_url": "https://cobrale-3b217.firebaseio.com",
+    "project_id": "cobrale-3b217",
+    "storage_bucket": "cobrale-3b217.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:52546776217:android:25412528027de23f",
+        "android_client_info": {
+          "package_name": "com.mcdm.alejandro.myapplication"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "52546776217-95q3luqi2221av64ied9634cnsjsd2jn.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.mcdm.alejandro.myapplication",
+            "certificate_hash": "D0E3BC52B96AB2DD082236DA565EA4C4506C139F"
+          }
+        },
+        {
+          "client_id": "52546776217-cctu0v8voin4hspqa50506l4tg5evq5n.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAMSdf3sB9c_EJg32my2J0ZPoWfkdeduGI"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "52546776217-cctu0v8voin4hspqa50506l4tg5evq5n.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
