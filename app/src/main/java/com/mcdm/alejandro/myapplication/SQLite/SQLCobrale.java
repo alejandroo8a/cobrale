@@ -48,7 +48,7 @@ public class SQLCobrale  extends SQLiteOpenHelper{
     private static String tablaCliente = "CREATE TABLE cliente(idCliente INTEGER PRIMARY KEY  AUTOINCREMENT, nombre TEXT, calle TEXT, colonia TEXT, telefono1 TEXT, telefono2 TEXT, activo BOOLEAN, razonSocial TEXT, sincronizado BOOLEAN)";
     private static String tablaVentas = "CREATE TABLE ventas(idVenta INTEGER PRIMARY KEY AUTOINCREMENT, idCliente INTEGER, idProductos INTEGER, idPagos INTEGER, fechaVenta TEXT, prendasTotal INTEGER, total REAL, diaSemana TEXT, plazo TEXT, pagado BOOLEAN, sincronizado BOOLEAN)";
     private static String tablaPagos = "CREATE TABLE pagos(idPago INTEGER, monto REAL, resto REAL, total REAL, fechaCobro TEXT, fechaPago TEXT, activo BOOLEAN, sincronizado BOOLEAN)";
-    private static String tablaPrendas = "CREATE TABLE prendas(idProducto INTEGER, descripccion TEXT, tipoPrenda TEXT, costo REAL, cantidad REAL, sincronizado BOOLEAN)";
+    private static String tablaPrendas = "CREATE TABLE prendas(id INTEGER PRIMARY KEY AUTOINCREMENT,idProducto INTEGER, descripccion TEXT, tipoPrenda TEXT, costo REAL, cantidad REAL, sincronizado BOOLEAN)";
     private static String tablaRopa = "CREATE TABLE ropa(idRopa INTEGER PRIMARY KEY AUTOINCREMENT, nombre TEXT, sincronizado BOOLEAN)";
     private static String tablaLugares =  "CREATE TABLE lugar(idLugar INTEGER PRIMARY KEY AUTOINCREMENT, nombre TEXT, sincronizado BOOLEAN)";
 
@@ -140,7 +140,7 @@ public class SQLCobrale  extends SQLiteOpenHelper{
             nuevaPrenda.put("tipoPrenda",prendas.get(i).getTipoPrenda());
             nuevaPrenda.put("costo",prendas.get(i).getCosto());
             nuevaPrenda.put("cantidad",prendas.get(i).getCantidad());
-            nuevaPrenda.put("sincronizado",prendas.get(i).isSincronizado());
+            nuevaPrenda.put("sincronizado",false);
             try{
                 db.insertOrThrow(prenda,null,nuevaPrenda);
                 Log.d(TAG, "SE INSERTO LA PRENDA ");
@@ -449,7 +449,7 @@ public class SQLCobrale  extends SQLiteOpenHelper{
 
 
     //RESPALDOS
-    public List<cliente> getCliente(Context context){
+    public List<cliente> respaldoCliente(Context context){
         SQLiteDatabase db = getWritableDatabase();
         List<cliente> clientes = new ArrayList<>();
         Cursor cursor = db.rawQuery("SELECT * FROM "+clienteT+" WHERE sincronizado = 0",null);
@@ -467,14 +467,43 @@ public class SQLCobrale  extends SQLiteOpenHelper{
                 cl.setSincronizado(true);
                 clientes.add(cl);
             }while (cursor.moveToNext());
+        boolean sync = actualizarSincronizado(db, clienteT,context);
+        if(!sync)
+            return null;
+        return clientes;
+    }
+
+    public List<prendas> respaldoPrendas(Context context){
+        SQLiteDatabase db = getWritableDatabase();
+        List<prendas> aprendas = new ArrayList<>();
+        Cursor cursor =db.rawQuery("SELECT * FROM "+prenda+" WHERE sincronizado = 0",null);
+        if(cursor.moveToFirst())
+            do{
+                prendas pr = new prendas();
+                pr.setIdNube(cursor.getInt(0));
+                pr.setIdPrenda(cursor.getInt(1));
+                pr.setDescripccion(cursor.getString(2));
+                pr.setTipoPrenda(cursor.getString(3));
+                pr.setCosto(cursor.getDouble(4));
+                pr.setCantidad(cursor.getInt(5));
+                pr.setSincronizado(true);
+                aprendas.add(pr);
+            }while (cursor.moveToNext());
+        boolean sync = actualizarSincronizado(db, prenda,context);
+        if(!sync)
+            return null;
+        return aprendas;
+    }
+
+    private boolean actualizarSincronizado(SQLiteDatabase db, String tabla,Context context){
         ContentValues sincronizar = new ContentValues();
         sincronizar.put("sincronizado",1);
         try{
-            db.update(clienteT,sincronizar,null,null);
+            db.update(tabla,sincronizar,null,null);
         }catch (SQLiteException ex){
             Toast.makeText(context, "Error al sincronizar: "+ex.getMessage(), Toast.LENGTH_SHORT).show();
-            return null;
+            return false;
         }
-        return clientes;
+        return true;
     }
 }

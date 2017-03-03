@@ -122,7 +122,10 @@ public class clientes extends Fragment {
             @Override
             public void onClick(View view) {
                 firebase fb = new firebase(getContext());
-                fb.guardarClientes();
+                //fb.guardarClientes();
+                //fb.anillo();
+                //fb.barra();
+                fb.respaldo();
             }
         });
 
