@@ -446,6 +446,27 @@ public class SQLCobrale  extends SQLiteOpenHelper{
         return clientes;
     }
 
+    public double getPagoExiste(int idCliente, Context context){
+        SQLiteDatabase db = getWritableDatabase();
+        Cursor cursor = db.rawQuery("SELECT idPagos, idVenta FROM "+venta+ " WHERE idCliente = "+idCliente+" and pagado = 0", null);
+        if(cursor.moveToFirst()){
+            double resto = getResto(cursor.getInt(0), context);
+            updateVenta(cursor.getInt(1),context);
+            return resto;
+        }
+        return 0;
+    }
+
+    public double getResto(int idPago, Context context){
+        SQLiteDatabase db = getWritableDatabase();
+        Cursor cursor = db.rawQuery("SELECT resto from "+pago+" WHERE idPago = "+idPago+" AND activo = 1", null);
+        if(cursor.moveToFirst()){
+            updatePago(idPago, context);
+            return cursor.getDouble(0);
+        }
+        return 0.0;
+    }
+
 
 
     //RESPALDOS

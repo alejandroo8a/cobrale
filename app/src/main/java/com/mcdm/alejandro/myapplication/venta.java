@@ -410,14 +410,18 @@ public class venta extends AppCompatActivity {
     }
 
     private void insertarPago() {
+        double resto = db.getPagoExiste(id, getApplicationContext());
         pagos p = new pagos();
         p.setMonto(abono);
-        p.setResto(Double.valueOf(txtTotal.getText().toString()));
         p.setTotal(subTotal);
         p.setFechaPago(txtFecha.getText().toString());
         p.setFechaCobro(fechaCobro);
         p.setActivo(true);
         p.setSincronizado(false);
+        if(resto!=0.0)
+            p.setResto(Double.valueOf(txtTotal.getText().toString())+resto);
+        else
+            p.setResto(Double.valueOf(txtTotal.getText().toString()));
         db.insertPago(idPago,p,venta.this);
     }
 
