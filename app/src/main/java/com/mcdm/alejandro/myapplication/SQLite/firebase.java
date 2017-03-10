@@ -4,12 +4,14 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.mcdm.alejandro.myapplication.R;
 import com.mcdm.alejandro.myapplication.clases.cliente;
+import com.mcdm.alejandro.myapplication.clases.conexion;
 import com.mcdm.alejandro.myapplication.clases.lugarRopa;
 import com.mcdm.alejandro.myapplication.clases.pagos;
 import com.mcdm.alejandro.myapplication.clases.prendas;
@@ -39,13 +41,22 @@ public class firebase {
     }
 
     public void respaldo(){
-        guardarClientes();
-        guardarLugar();
-        guardarPrendas();
-        guardarRopa();
-        guardarVentas();
-        guardarPagos();
-        avisoResultadosRespaldo();
+        conexion conexion = new conexion();
+        if(conexion.isAvaliable(context)){
+            if(conexion.isOnline(context)){
+                guardarClientes();
+                guardarLugar();
+                guardarPrendas();
+                guardarRopa();
+                guardarVentas();
+                guardarPagos();
+                avisoResultadosRespaldo();
+            }else
+                avisoNoConexion();
+
+        }else
+            avisoNoRed();
+
     }
 
     private void guardarClientes(){
@@ -154,6 +165,34 @@ public class firebase {
         alert.setTitle("Resultado de respaldo")
                 .setMessage(avisoRespaldo)
                 .setIcon(R.drawable.ic_backup)
+                .setPositiveButton("ACEPTAR", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+
+                    }
+                })
+                .show();
+    }
+
+    private void avisoNoRed(){
+        AlertDialog.Builder builder = new AlertDialog.Builder(context);
+        builder.setTitle("AVISO")
+                .setIcon(R.drawable.ic_wifi_off)
+                .setMessage("Encienda el Wi-Fi o los datos móviles.")
+                .setPositiveButton("ACEPTAR", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+
+                    }
+                })
+                .show();
+    }
+
+    private void avisoNoConexion(){
+        AlertDialog.Builder builder = new AlertDialog.Builder(context);
+        builder.setTitle("AVISO")
+                .setIcon(R.drawable.ic_cloud_off)
+                .setMessage("No hay conexión a internet.")
                 .setPositiveButton("ACEPTAR", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
