@@ -8,8 +8,6 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AlertDialog;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -23,8 +21,6 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
-
 import com.mcdm.alejandro.myapplication.SQLite.SQLCobrale;
 import com.mcdm.alejandro.myapplication.SQLite.firebase;
 import com.mcdm.alejandro.myapplication.clases.cliente;
@@ -122,9 +118,6 @@ public class clientes extends Fragment {
             @Override
             public void onClick(View view) {
                 firebase fb = new firebase(getContext());
-                //fb.guardarClientes();
-                //fb.anillo();
-                //fb.barra();
                 fb.respaldo();
             }
         });
@@ -147,6 +140,7 @@ public class clientes extends Fragment {
                 final String nombre = lsClientes.getItemAtPosition(i).toString();
                 AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
                 builder.setTitle("Eliminar")
+                        .setIcon(R.drawable.ic_account_remove)
                         .setMessage("¿Desea eliminar a "+lsClientes.getItemAtPosition(i)+" ?")
                         .setPositiveButton("Eliminar", new DialogInterface.OnClickListener() {
                             @Override

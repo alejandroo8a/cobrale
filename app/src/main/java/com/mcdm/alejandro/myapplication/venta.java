@@ -19,6 +19,7 @@ import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.GridView;
+import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -223,6 +224,8 @@ public class venta extends AppCompatActivity {
         final View  view = inflater.inflate(R.layout.dialog_razon_social,null);
         TextView txtRazonSocial = (TextView)view.findViewById(R.id.txtRazonSocial);
         final EditText edtRazon = (EditText)view.findViewById(R.id.edtRazon);
+        final ImageView ivRazon = (ImageView)view.findViewById(R.id.iv_imagenRazon);
+        ivRazon.setImageDrawable(getDrawable(R.drawable.ic_ropa));
         txtRazonSocial.setText("Agregar tipo de prenda");
         edtRazon.setHint("Tipo prenda");
         builder.setView(view);
@@ -360,6 +363,7 @@ public class venta extends AppCompatActivity {
     private void eliminarPrenda(final int pos){
         AlertDialog.Builder alert = new AlertDialog.Builder(venta.this);
         alert.setTitle("Eliminar")
+                .setIcon(R.drawable.ic_close)
                 .setMessage("¿Desea eliminar la prenda?")
                 .setPositiveButton("Eliminar", new DialogInterface.OnClickListener() {
                     @Override

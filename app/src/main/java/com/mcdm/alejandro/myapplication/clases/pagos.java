@@ -6,6 +6,7 @@ package com.mcdm.alejandro.myapplication.clases;
 
 public class pagos {
 
+    private Integer id;
     private double monto;
     private double resto;//LO QUE EL CLIENTE PAGARÁ
     private double total;
@@ -18,7 +19,8 @@ public class pagos {
 
     }
 
-    public pagos(double monto, double resto, double total, String fechaCobro, String fechaPago, boolean activo, boolean sincronizado) {
+    public pagos(Integer id, double monto, double resto, double total, String fechaCobro, String fechaPago, boolean activo, boolean sincronizado) {
+        this.id = id;
         this.monto = monto;
         this.resto = resto;
         this.total = total;
@@ -26,6 +28,14 @@ public class pagos {
         this.fechaPago = fechaPago;
         this.activo = activo;
         this.sincronizado = sincronizado;
+    }
+
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
     }
 
     public double getMonto() {

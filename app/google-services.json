@@ -15,11 +15,19 @@
       },
       "oauth_client": [
         {
+          "client_id": "52546776217-tt0qvbfk1g2nstbieneru7bkdj27558n.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.mcdm.alejandro.myapplication",
+            "certificate_hash": "39e57e2b7528542b34dd809a8f049aeb2f194b9c"
+          }
+        },
+        {
           "client_id": "52546776217-95q3luqi2221av64ied9634cnsjsd2jn.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
             "package_name": "com.mcdm.alejandro.myapplication",
-            "certificate_hash": "D0E3BC52B96AB2DD082236DA565EA4C4506C139F"
+            "certificate_hash": "d0e3bc52b96ab2dd082236da565ea4c4506c139f"
           }
         },
         {

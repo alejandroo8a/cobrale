@@ -5,7 +5,7 @@ package com.mcdm.alejandro.myapplication.clases;
  */
 
 public class ventas {
-
+    private Integer idVenta;
     private Integer idCliente;
     private Integer idProductos;
     private Integer idPagos;
@@ -21,7 +21,9 @@ public class ventas {
 
     }
 
-    public ventas(Integer idProductos, Integer idPagos, String fechaVenta, String prendasTotal, String plazo, String diaSemana, double total, boolean pagado, boolean sincronizado) {
+    public ventas(Integer idVenta, Integer idCliente, Integer idProductos, Integer idPagos, String fechaVenta, String prendasTotal, String plazo, String diaSemana, double total, boolean pagado, boolean sincronizado) {
+        this.idVenta = idVenta;
+        this.idCliente = idCliente;
         this.idProductos = idProductos;
         this.idPagos = idPagos;
         this.fechaVenta = fechaVenta;
@@ -31,6 +33,14 @@ public class ventas {
         this.total = total;
         this.pagado = pagado;
         this.sincronizado = sincronizado;
+    }
+
+    public Integer getIdVenta() {
+        return idVenta;
+    }
+
+    public void setIdVenta(Integer idVenta) {
+        this.idVenta = idVenta;
     }
 
     public Integer getIdCliente() {

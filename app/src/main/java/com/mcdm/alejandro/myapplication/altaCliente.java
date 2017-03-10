@@ -64,9 +64,6 @@ public class altaCliente extends AppCompatActivity {
             btnVenta.setVisibility(View.VISIBLE);
             btnLlamar.setVisibility(View.VISIBLE);
         }
-
-
-
     }
     //EVENTO QUE USA EL BOTON GUARDAR
     public void guardarCliente(View v){

@@ -1,21 +1,23 @@
 package com.mcdm.alejandro.myapplication.SQLite;
 
 
+import android.app.AlertDialog;
 import android.content.ContentValues;
 import android.content.Context;
-import android.content.Intent;
+import android.content.DialogInterface;
 import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
-import android.database.sqlite.SQLiteDatatypeMismatchException;
 import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.mcdm.alejandro.myapplication.R;
 import com.mcdm.alejandro.myapplication.clases.DEBEN;
 import com.mcdm.alejandro.myapplication.clases.HISTORIAL;
 import com.mcdm.alejandro.myapplication.clases.cliente;
+import com.mcdm.alejandro.myapplication.clases.lugarRopa;
 import com.mcdm.alejandro.myapplication.clases.pagos;
 import com.mcdm.alejandro.myapplication.clases.prendas;
 import com.mcdm.alejandro.myapplication.clases.ventas;
@@ -24,9 +26,6 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -36,7 +35,8 @@ import java.util.Map;
  * Created by alejandro on 7/12/16.
  */
 
-
+//TODO
+    //EL ID DE PAGO SE DEBE DE CAMBIAR A UNO QUE SE ESTE GENERANDO UN FOLIO DISTINTO, YA QUE ES IMPOSIBLE HACER EL RESPALDO DE ESA FORMA
 public class SQLCobrale  extends SQLiteOpenHelper{
 
     //NOMBRE DE LA BD
@@ -81,9 +81,9 @@ public class SQLCobrale  extends SQLiteOpenHelper{
         sqLiteDatabase.execSQL("DROP TABLE IF EXISTS "+clienteT);
         sqLiteDatabase.execSQL("DROP TABLE IF EXISTS "+venta);
         sqLiteDatabase.execSQL("DROP TABLE IF EXISTS "+pago);
-        sqLiteDatabase.execSQL("DROP TABLE I EXISTS "+prenda);
-        sqLiteDatabase.execSQL("DROP TABLE I EXISTS "+ropa);
-        sqLiteDatabase.execSQL("DROP TABLE I EXISTS "+lugares);
+        sqLiteDatabase.execSQL("DROP TABLE IF EXISTS "+prenda);
+        sqLiteDatabase.execSQL("DROP TABLE IF EXISTS "+ropa);
+        sqLiteDatabase.execSQL("DROP TABLE IF EXISTS "+lugares);
         sqLiteDatabase.execSQL(tablaCliente);
         sqLiteDatabase.execSQL(tablaVentas);
         sqLiteDatabase.execSQL(tablaPagos);
@@ -121,6 +121,7 @@ public class SQLCobrale  extends SQLiteOpenHelper{
         SQLiteDatabase db = getWritableDatabase();
         ContentValues nuevaRazon = new ContentValues();
         nuevaRazon.put("nombre", razon);
+        nuevaRazon.put("sincronizado",false);
         try {
             db.insertOrThrow(lugares, null, nuevaRazon);
             Log.d(TAG, "SE INSERTO LA RAZON SOCIAL ");
@@ -265,10 +266,24 @@ public class SQLCobrale  extends SQLiteOpenHelper{
         actualizarPagado.put("pagado",true);
         try{
             db.update(venta,actualizarPagado,"idPagos="+idPago,null);
-            Toast.makeText(context, "El cliente término su deuda", Toast.LENGTH_SHORT).show();
+            alertaTerminoPago(context);
         }catch (SQLiteException ex){
             Toast.makeText(context, "Error al completar el pago: "+ex.getMessage(), Toast.LENGTH_SHORT).show();
         }
+    }
+
+    private void alertaTerminoPago(Context context){
+        AlertDialog.Builder builder = new AlertDialog.Builder(context);
+        builder.setTitle("Status de pago.")
+                .setMessage("El cliente terminó su deudad.")
+                .setIcon(R.drawable.ic_cash)
+                .setPositiveButton("ACEPTAR", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+
+                    }
+                })
+                .show();
     }
 
     //ACTUALIZA EL PAGO ANTESESOR
@@ -488,9 +503,6 @@ public class SQLCobrale  extends SQLiteOpenHelper{
                 cl.setSincronizado(true);
                 clientes.add(cl);
             }while (cursor.moveToNext());
-        boolean sync = actualizarSincronizado(db, clienteT,context);
-        if(!sync)
-            return null;
         return clientes;
     }
 
@@ -510,21 +522,117 @@ public class SQLCobrale  extends SQLiteOpenHelper{
                 pr.setSincronizado(true);
                 aprendas.add(pr);
             }while (cursor.moveToNext());
-        boolean sync = actualizarSincronizado(db, prenda,context);
-        if(!sync)
-            return null;
         return aprendas;
     }
 
-    private boolean actualizarSincronizado(SQLiteDatabase db, String tabla,Context context){
+    public List<lugarRopa> respaldoLugares(Context context){
+        SQLiteDatabase db = getWritableDatabase();
+        List<lugarRopa> aLugar = new ArrayList<>();
+        Cursor cursor = db.rawQuery("SELECT * FROM "+lugares+" WHERE sincronizado = 0",null);
+        if(cursor.moveToFirst())
+            do{
+                lugarRopa place = new lugarRopa();
+                place.setId(cursor.getInt(0));
+                place.setNombre(cursor.getString(1));
+                place.setSincronizado(true);
+                aLugar.add(place);
+            }while (cursor.moveToNext());
+        return aLugar;
+    }
+
+    public List <pagos> respaldoPagos(Context context){
+        SQLiteDatabase db = getWritableDatabase();
+        List<pagos> aPagos = new ArrayList<>();
+        Cursor cursor = db.rawQuery("SELECT * FROM "+pago+" WHERE sincronizado = 0",null);
+        if(cursor.moveToFirst())
+            do{
+                pagos pay = new pagos();
+                pay.setId(cursor.getInt(0));
+                pay.setMonto(cursor.getDouble(1));
+                pay.setResto(cursor.getDouble(2));
+                pay.setTotal(cursor.getDouble(3));
+                pay.setFechaCobro(cursor.getString(4));
+                pay.setFechaPago(cursor.getString(5));
+                pay.setActivo(cursor.getInt(6)>0);
+                pay.setSincronizado(true);
+                aPagos.add(pay);
+            }while(cursor.moveToNext());
+        return aPagos;
+    }
+
+    public List<lugarRopa> respaldoRopa(Context context){
+        SQLiteDatabase db = getWritableDatabase();
+        List<lugarRopa> aLugar = new ArrayList<>();
+        Cursor cursor = db.rawQuery("SELECT * FROM "+ropa+" WHERE sincronizado = 0",null);
+        if(cursor.moveToFirst())
+            do{
+                lugarRopa place = new lugarRopa();
+                place.setId(cursor.getInt(0));
+                place.setNombre(cursor.getString(1));
+                place.setSincronizado(true);
+                aLugar.add(place);
+            }while (cursor.moveToNext());
+        return aLugar;
+    }
+
+    public List<ventas> respaldoVentas(Context context){
+        SQLiteDatabase db = getWritableDatabase();
+        List<ventas> aVentas = new ArrayList<>();
+        Cursor cursor = db.rawQuery("SELECT * FROM "+venta+" WHERE sincronizado = 0",null);
+        if(cursor.moveToFirst())
+            do{
+                ventas sell = new ventas();
+                sell.setIdVenta(cursor.getInt(0));
+                sell.setIdCliente(cursor.getInt(1));
+                sell.setIdProductos(cursor.getInt(2));
+                sell.setIdPagos(cursor.getInt(3));
+                sell.setFechaVenta(cursor.getString(4));
+                sell.setPrendasTotal(cursor.getString(5));
+                sell.setTotal(cursor.getDouble(6));
+                sell.setDiaSemana(cursor.getString(7));
+                sell.setPlazo(cursor.getString(8));
+                sell.setPagado(cursor.getInt(9)>0);
+                sell.setSincronizado(true);
+                aVentas.add(sell);
+            }while (cursor.moveToNext());
+        return aVentas;
+    }
+
+    public void actualizarSincronizado(Integer id, String tabla,Context context){
+        SQLiteDatabase db = getWritableDatabase();
+        String campo = obtenerCampo(tabla);
+        Log.d(TAG, "actualizarSincronizado: "+campo);
         ContentValues sincronizar = new ContentValues();
         sincronizar.put("sincronizado",1);
         try{
-            db.update(tabla,sincronizar,null,null);
+            db.update(tabla,sincronizar,campo + " = " + id,null);
         }catch (SQLiteException ex){
             Toast.makeText(context, "Error al sincronizar: "+ex.getMessage(), Toast.LENGTH_SHORT).show();
-            return false;
         }
-        return true;
+    }
+
+    private String obtenerCampo(String tabla){
+        String campo = "";
+        switch (tabla){
+            case venta:
+                campo = "idVenta";
+                break;
+            case clienteT:
+                campo = "idCliente";
+                break;
+            case pago:
+                campo = "idPago";
+                break;
+            case ropa:
+                campo = "idRopa";
+                break;
+            case lugares:
+                campo = "idLugar";
+                break;
+            case prenda:
+                campo = "id";
+                break;
+        }
+        return campo;
     }
 }

@@ -140,6 +140,7 @@ public class deben extends Fragment {
                                 pago.setFechaPago(fechaPago);
                                 pago.setActivo(true);
                                 pago.setSincronizado(false);
+                                alertDialog.dismiss();
                                 db.updatePago(listaDeben.get(posicion).getId(),getContext());
                                 db.insertPago(listaDeben.get(posicion).getId(),pago,getContext());
                                 if(resto==0.0)
@@ -147,7 +148,6 @@ public class deben extends Fragment {
                                 listaDeben.clear();
                                 llenarListaDeben();
                                 llenarDatagridDeben();
-                                alertDialog.dismiss();
                             }
                             else{
                                 Toast.makeText(getContext(), "El abono debe de ser igual a la cantidad a liquidar", Toast.LENGTH_SHORT).show();
@@ -165,6 +165,7 @@ public class deben extends Fragment {
                             pago.setFechaPago(fechaPago);
                             pago.setActivo(true);
                             pago.setSincronizado(false);
+                            alertDialog.dismiss();
                             db.updatePago(listaDeben.get(posicion).getId(),getContext());
                             db.insertPago(listaDeben.get(posicion).getId(),pago,getContext());
                             if(resto==0.0)
@@ -172,7 +173,6 @@ public class deben extends Fragment {
                             listaDeben.clear();
                             llenarListaDeben();
                             llenarDatagridDeben();
-                            alertDialog.dismiss();
                         }
                     }else
                         Toast.makeText(getContext(), "El abono no puede ser mayor al resto del pago", Toast.LENGTH_SHORT).show();
