@@ -19,7 +19,7 @@ public class conexion {
         return (info != null &&info.isConnected());
     }
 
-    public boolean isOnline(Context context){
+    public boolean isOnline(){
         try{
             Process p = Runtime.getRuntime().exec("ping -c 1 www.google.com");
             int val = p.waitFor();

@@ -414,7 +414,7 @@ public class venta extends AppCompatActivity {
     }
 
     private void insertarPago() {
-        double resto = db.getPagoExiste(id, getApplicationContext());
+        double resto = db.getPagoExiste(id, getApplicationContext(), true);
         pagos p = new pagos();
         p.setMonto(abono);
         p.setTotal(subTotal);

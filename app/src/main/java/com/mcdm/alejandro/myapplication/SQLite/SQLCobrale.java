@@ -260,13 +260,15 @@ public class SQLCobrale  extends SQLiteOpenHelper{
 
     }
     //ACTUALIZAR LA TABLA DE VENTAS QUE EL PAGO SE TERMINÓ DE PAGAR
-    public void updateVenta(Integer idPago, Context context){
+    public void updateVenta(Integer idPago, Context context, boolean compraNueva){
         SQLiteDatabase db = getWritableDatabase();
         ContentValues actualizarPagado = new ContentValues();
         actualizarPagado.put("pagado",true);
+        actualizarPagado.put("sincronizado",false);
         try{
             db.update(venta,actualizarPagado,"idPagos="+idPago,null);
-            alertaTerminoPago(context);
+            if(!compraNueva)
+                alertaTerminoPago(context);
         }catch (SQLiteException ex){
             Toast.makeText(context, "Error al completar el pago: "+ex.getMessage(), Toast.LENGTH_SHORT).show();
         }
@@ -461,12 +463,12 @@ public class SQLCobrale  extends SQLiteOpenHelper{
         return clientes;
     }
 
-    public double getPagoExiste(int idCliente, Context context){
+    public double getPagoExiste(int idCliente, Context context, boolean compraNueva){
         SQLiteDatabase db = getWritableDatabase();
         Cursor cursor = db.rawQuery("SELECT idPagos, idVenta FROM "+venta+ " WHERE idCliente = "+idCliente+" and pagado = 0", null);
         if(cursor.moveToFirst()){
             double resto = getResto(cursor.getInt(0), context);
-            updateVenta(cursor.getInt(1),context);
+            updateVenta(cursor.getInt(1),context, compraNueva);
             return resto;
         }
         return 0;

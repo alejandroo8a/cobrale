@@ -61,7 +61,6 @@ public class clientes extends Fragment {
         View view = inflater.inflate(R.layout.fragment_clientes, container, false);
         btnAgregarCliente = (FloatingActionButton)view.findViewById(R.id.btnAgregarCliente);
         btnSincronizar = (FloatingActionButton)view.findViewById(R.id.btnSincronizar);
-        txtLista = (TextView)view.findViewById(R.id.txtLista);
         txtCliente = (TextView)view.findViewById(R.id.txtCliente);
         imgClientes = (ImageView)view.findViewById(R.id.imgClientes);
         lsClientes = (ListView)view.findViewById(R.id.lsClientes);
@@ -168,7 +167,8 @@ public class clientes extends Fragment {
 
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                adaptador.getFilter().filter(charSequence);
+                if(!cl.isEmpty())
+                    adaptador.getFilter().filter(charSequence);
 
 
             }
@@ -188,17 +188,19 @@ public class clientes extends Fragment {
 
     private void llenarLista(){
         cl = db.getClientes();
-        final List<String> clientes = new ArrayList<>();
-        for(cliente client : cl){
-            clientes.add(client.getNombre());
-        }
-        if(clientes.size() ==0)
-            txtLista.setVisibility(View.INVISIBLE);
-        else{
-            imgClientes.setVisibility(View.INVISIBLE);
-            txtCliente.setVisibility(View.INVISIBLE);
-            adaptador = new ArrayAdapter(getActivity(), android.R.layout.simple_list_item_activated_1,clientes);
-            lsClientes.setAdapter(adaptador);
+        if(!cl.isEmpty()) {
+            final List<String> clientes = new ArrayList<>();
+            for (cliente client : cl) {
+                clientes.add(client.getNombre());
+            }
+            if (clientes.size() == 0)
+                txtLista.setVisibility(View.INVISIBLE);
+            else {
+                imgClientes.setVisibility(View.INVISIBLE);
+                txtCliente.setVisibility(View.INVISIBLE);
+                adaptador = new ArrayAdapter(getActivity(), android.R.layout.simple_list_item_activated_1, clientes);
+                lsClientes.setAdapter(adaptador);
+            }
         }
     }
 

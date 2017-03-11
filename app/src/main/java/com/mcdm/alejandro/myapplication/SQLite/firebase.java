@@ -43,7 +43,7 @@ public class firebase {
     public void respaldo(){
         conexion conexion = new conexion();
         if(conexion.isAvaliable(context)){
-            if(conexion.isOnline(context)){
+            if(conexion.isOnline()){
                 guardarClientes();
                 guardarLugar();
                 guardarPrendas();

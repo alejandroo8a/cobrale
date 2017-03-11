@@ -7,27 +7,19 @@
 
     <!-- TODO: Update blank fragment layout -->
 
-    <TextView
-        android:id="@+id/txtLista"
-        android:text="Lista de clientes."
-        android:textSize="25dp"
-        android:layout_gravity="center|top"
-        android:layout_marginLeft="10dp"
-        android:layout_marginTop="75dp"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+
     <EditText
         android:id="@+id/edtBuscarCliente"
         android:hint="Buscar cliente"
         android:layout_marginLeft="10dp"
         android:layout_marginRight="10dp"
-        android:layout_marginTop="105dp"
+        android:layout_marginTop="75dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
 
     <ListView
         android:id="@+id/lsClientes"
-        android:layout_marginTop="145dp"
+        android:layout_marginTop="115dp"
         android:layout_marginLeft="10dp"
         android:layout_marginRight="10dp"
         android:layout_width="match_parent"

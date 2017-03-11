@@ -144,7 +144,7 @@ public class deben extends Fragment {
                                 db.updatePago(listaDeben.get(posicion).getId(),getContext());
                                 db.insertPago(listaDeben.get(posicion).getId(),pago,getContext());
                                 if(resto==0.0)
-                                    db.updateVenta(listaDeben.get(posicion).getId(),getContext());
+                                    db.updateVenta(listaDeben.get(posicion).getId(),getContext(), false);
                                 listaDeben.clear();
                                 llenarListaDeben();
                                 llenarDatagridDeben();
@@ -169,7 +169,7 @@ public class deben extends Fragment {
                             db.updatePago(listaDeben.get(posicion).getId(),getContext());
                             db.insertPago(listaDeben.get(posicion).getId(),pago,getContext());
                             if(resto==0.0)
-                                db.updateVenta(listaDeben.get(posicion).getId(),getContext());
+                                db.updateVenta(listaDeben.get(posicion).getId(),getContext(), false);
                             listaDeben.clear();
                             llenarListaDeben();
                             llenarDatagridDeben();
