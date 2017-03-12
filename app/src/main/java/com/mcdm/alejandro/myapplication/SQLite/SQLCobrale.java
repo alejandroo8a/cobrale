@@ -17,6 +17,7 @@ import com.mcdm.alejandro.myapplication.R;
 import com.mcdm.alejandro.myapplication.clases.DEBEN;
 import com.mcdm.alejandro.myapplication.clases.HISTORIAL;
 import com.mcdm.alejandro.myapplication.clases.cliente;
+import com.mcdm.alejandro.myapplication.clases.historial_card;
 import com.mcdm.alejandro.myapplication.clases.lugarRopa;
 import com.mcdm.alejandro.myapplication.clases.pagos;
 import com.mcdm.alejandro.myapplication.clases.prendas;
@@ -482,6 +483,53 @@ public class SQLCobrale  extends SQLiteOpenHelper{
             return cursor.getDouble(0);
         }
         return 0.0;
+    }
+
+    public List<historial_card> getVentasHistorial(int idCliente){
+        SQLiteDatabase db = getWritableDatabase();
+        List<historial_card> aVentas = new ArrayList<>();
+        Cursor cursor = db.rawQuery("SELECT fechaVenta, idProductos, total, idPagos FROM ventas WHERE idCliente = "+idCliente,null);
+        if(cursor.moveToFirst()){
+            do {
+                historial_card venta = new historial_card();
+                venta.setFecha(cursor.getString(0));
+                venta.setResto(getTotalPrendas(cursor.getInt(1)));
+                venta.setTotal(cursor.getDouble(2));
+                venta.setId(cursor.getInt(3));
+                venta.setTipo(false);
+                aVentas.add(venta);
+            }while(cursor.moveToNext());
+        }
+        return aVentas;
+    }
+
+    public List<historial_card> getPagosHistorial(List<historial_card> aHistorial ,int idPago){
+        SQLiteDatabase db = getWritableDatabase();
+        Cursor cursor = db.rawQuery("SELECT fechaPago, monto, resto FROM pagos WHERE idPago = "+idPago, null);
+        if(cursor.moveToFirst()){
+            do {
+                if(cursor.getDouble(1)== 0.0)
+                    continue;
+                else {
+                    historial_card pago = new historial_card();
+                    pago.setFecha(cursor.getString(0));
+                    pago.setTotal(cursor.getDouble(1));
+                    pago.setResto(cursor.getDouble(2));
+                    pago.setTipo(true);
+                    aHistorial.add(pago);
+                }
+            }while(cursor.moveToNext());
+        }
+        return aHistorial;
+    }
+
+    private Double getTotalPrendas(int idPrenda){
+        SQLiteDatabase db = getWritableDatabase();
+        Double total = 0.0;
+        Cursor cursor = db.rawQuery("SELECT id, COUNT(*) FROM prendas WHERE id = "+idPrenda+" GROUP BY id",null);
+        if(cursor.moveToFirst())
+            total = Double.parseDouble(String.valueOf(cursor.getCount()));
+        return total;
     }
 
 
