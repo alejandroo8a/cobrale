@@ -1,15 +1,19 @@
 package com.mcdm.alejandro.myapplication.adapter;
 
+import android.content.Intent;
 import android.graphics.Color;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.mcdm.alejandro.myapplication.R;
 import com.mcdm.alejandro.myapplication.clases.historial_card;
+import com.mcdm.alejandro.myapplication.historial_detalles;
 
 import java.util.List;
 
@@ -18,7 +22,7 @@ import java.util.List;
  */
 
 public class adapter_cardHistorial extends RecyclerView.Adapter<adapter_cardHistorial.historialViewHolder> {
-
+    private static final String TAG = "adapter_cardHistorial";
     public List<historial_card> aItems;
 
     public static class historialViewHolder extends RecyclerView.ViewHolder {
@@ -27,6 +31,8 @@ public class adapter_cardHistorial extends RecyclerView.Adapter<adapter_cardHist
         public TextView txtTotaHistorial;
         public TextView txtCantidadHistorial;
         public RelativeLayout rlHistorialCard;
+        public View view;
+        public historial_card current;
 
         public historialViewHolder(View v) {
             super(v);
@@ -34,6 +40,17 @@ public class adapter_cardHistorial extends RecyclerView.Adapter<adapter_cardHist
             txtTotaHistorial = (TextView) v.findViewById(R.id.txtTotaHistorial);
             txtCantidadHistorial = (TextView) v.findViewById(R.id.txtCantidadHistorial);
             rlHistorialCard = (RelativeLayout)v.findViewById(R.id.rlHistorialCard);
+            view = v;
+            view.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if(!current.getTipo()) {
+                        Intent intent = new Intent(view.getContext(), historial_detalles.class);
+                        intent.putExtra("IDVENTA", current.getId());
+                        view.getContext().startActivity(intent);
+                    }
+                }
+            });
         }
     }
 
@@ -50,9 +67,11 @@ public class adapter_cardHistorial extends RecyclerView.Adapter<adapter_cardHist
 
     @Override
     public void onBindViewHolder(adapter_cardHistorial.historialViewHolder holder, int position) {
+        holder.current = aItems.get(position);
         holder.txtFechaHistorial.setText("Fecha: "+ aItems.get(position).getFecha());
         holder.txtTotaHistorial.setText(String.valueOf(aItems.get(position).getTotal()));
         holder.txtCantidadHistorial.setText(String.valueOf(aItems.get(position).getResto()));
+        //Pago
         if(aItems.get(position).getTipo())
             holder.rlHistorialCard.setBackgroundColor(Color.parseColor("#71dc64"));
         else

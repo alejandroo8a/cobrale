@@ -27,7 +27,8 @@
         <activity
             android:name=".venta"
             android:screenOrientation="portrait" />
-        <activity android:name=".historial_pagos"></activity>
+        <activity android:name=".historial_pagos" />
+        <activity android:name=".historial_detalles"></activity>
     </application>
 
 </manifest>

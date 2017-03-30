@@ -532,7 +532,32 @@ public class SQLCobrale  extends SQLiteOpenHelper{
         return total;
     }
 
+    public Integer getIdPrenda(int idVenta){
+        SQLiteDatabase db = getWritableDatabase();
+        Integer idPrenda = 0;
+        Cursor cursor = db.rawQuery("SELECT idProductos FROM "+venta+" WHERE idVenta = "+idVenta,null);
+        if(cursor.moveToFirst())
+            idPrenda = cursor.getInt(0);
+        return idPrenda;
+    }
 
+    public ArrayList<prendas> getPrendasHistorialDetalle(int idPrenda){
+        SQLiteDatabase db = getWritableDatabase();
+        ArrayList<prendas> listaPrendas = new ArrayList<>();
+        Cursor cursor = db.rawQuery("SELECT * from "+prenda+" WHERE idProducto = "+idPrenda, null);
+        if(cursor.moveToFirst())
+            do{
+                prendas item = new prendas();
+                item.setIdNube(cursor.getInt(0));
+                item.setIdPrenda(cursor.getInt(1));
+                item.setDescripccion(cursor.getString(2));
+                item.setTipoPrenda(cursor.getString(3));
+                item.setCosto(cursor.getDouble(4));
+                item.setCantidad(cursor.getInt(5));
+                listaPrendas.add(item);
+            }while(cursor.moveToNext());
+        return listaPrendas;
+    }
 
     //RESPALDOS
     public List<cliente> respaldoCliente(Context context){
