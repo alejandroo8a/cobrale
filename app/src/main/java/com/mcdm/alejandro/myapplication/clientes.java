@@ -38,7 +38,7 @@ import java.util.List;
 public class clientes extends Fragment {
 
     private final String TAG = "clientes";
-    private FloatingActionButton btnAgregarCliente,btnSincronizar;
+    private FloatingActionButton btnAgregarCliente;
     private TextView txtLista, txtCliente;
     private ImageView imgClientes;
     private ListView lsClientes;
@@ -60,7 +60,6 @@ public class clientes extends Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_clientes, container, false);
         btnAgregarCliente = (FloatingActionButton)view.findViewById(R.id.btnAgregarCliente);
-        btnSincronizar = (FloatingActionButton)view.findViewById(R.id.btnSincronizar);
         txtCliente = (TextView)view.findViewById(R.id.txtCliente);
         imgClientes = (ImageView)view.findViewById(R.id.imgClientes);
         lsClientes = (ListView)view.findViewById(R.id.lsClientes);
@@ -110,14 +109,6 @@ public class clientes extends Fragment {
             public void onClick(View view) {
                 Intent intent = new Intent(getContext(), altaCliente.class);
                 startActivity(intent);
-            }
-        });
-
-        btnSincronizar.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                firebase fb = new firebase(getContext());
-                fb.respaldo();
             }
         });
 

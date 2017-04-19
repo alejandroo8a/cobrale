@@ -1,7 +1,6 @@
 package com.mcdm.alejandro.myapplication;
 
 import android.content.Context;
-import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -9,8 +8,6 @@ import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
-import android.support.v4.view.PagerAdapter;
-import android.support.v4.view.ViewCompat;
 import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -100,6 +97,7 @@ public class cobroHoy extends Fragment {
         tabLayout.addTab(tabLayout.newTab().setText("CLIENTES").setIcon(R.drawable.ic_cliente));
         tabLayout.addTab(tabLayout.newTab().setText("HISTORIAL").setIcon(R.drawable.ic_historial));
         tabLayout.addTab(tabLayout.newTab().setText("ESTADISTICAS").setIcon(R.drawable.ic_estadisticas));
+        tabLayout.addTab(tabLayout.newTab().setText("CONFIGURACION").setIcon(R.drawable.ic_configuracion));
 
         //Add fragments
         PagerAdapter adapter = new PagerAdapter(getFragmentManager());
@@ -108,6 +106,7 @@ public class cobroHoy extends Fragment {
         adapter.addFragment(new clientes());
         adapter.addFragment(new historial());
         adapter.addFragment(new estadisticas());
+        adapter.addFragment(new configuracion());
 
         //Setting adapter
         viewPager.setAdapter(adapter);

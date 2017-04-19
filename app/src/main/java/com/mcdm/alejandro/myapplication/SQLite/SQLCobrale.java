@@ -51,7 +51,7 @@ public class SQLCobrale  extends SQLiteOpenHelper{
     private static String tablaPagos = "CREATE TABLE pagos(idPago INTEGER, monto REAL, resto REAL, total REAL, fechaCobro TEXT, fechaPago TEXT, activo BOOLEAN, sincronizado BOOLEAN)";
     private static String tablaPrendas = "CREATE TABLE prendas(id INTEGER PRIMARY KEY AUTOINCREMENT,idProducto INTEGER, descripccion TEXT, tipoPrenda TEXT, costo REAL, cantidad REAL, sincronizado BOOLEAN)";
     private static String tablaRopa = "CREATE TABLE ropa(idRopa INTEGER PRIMARY KEY AUTOINCREMENT, nombre TEXT, sincronizado BOOLEAN)";
-    private static String tablaLugares =  "CREATE TABLE lugar(idLugar INTEGER PRIMARY KEY AUTOINCREMENT, nombre TEXT, sincronizado BOOLEAN)";
+    private static String tablaLugares =  "CREATE TABLE lugar(idLugar, nombre TEXT, sincronizado BOOLEAN)";
 
     //NOMBRE DE TABLAS
     final String clienteT = "cliente";
@@ -92,6 +92,55 @@ public class SQLCobrale  extends SQLiteOpenHelper{
         sqLiteDatabase.execSQL(tablaRopa);
         sqLiteDatabase.execSQL(tablaLugares);
     }
+
+    public void borrarDatos(){
+        SQLiteDatabase sqLiteDatabase = getWritableDatabase();
+        borrarClientes();
+        borrarVentas();
+        borrarPagos();
+        borrarPrendas();
+        borrarRopa();
+        borrarLugares();
+        Log.d(TAG, "SE BORRARON LOS DATOS ");
+    }
+
+    public void borrarClientes( ){
+        SQLiteDatabase sqLiteDatabase = getWritableDatabase();
+        sqLiteDatabase.execSQL("DROP TABLE IF EXISTS "+clienteT);
+        sqLiteDatabase.execSQL(tablaCliente);
+    }
+
+    public void borrarVentas( ){
+        SQLiteDatabase sqLiteDatabase = getWritableDatabase();
+        sqLiteDatabase.execSQL("DROP TABLE IF EXISTS "+venta);
+        sqLiteDatabase.execSQL(tablaVentas);
+    }
+
+    public void borrarPagos(){
+        SQLiteDatabase sqLiteDatabase = getWritableDatabase();
+        sqLiteDatabase.execSQL("DROP TABLE IF EXISTS "+pago);
+        sqLiteDatabase.execSQL(tablaPagos);
+    }
+
+    public void borrarPrendas(){
+        SQLiteDatabase sqLiteDatabase = getWritableDatabase();
+        sqLiteDatabase.execSQL("DROP TABLE IF EXISTS "+prenda);
+        sqLiteDatabase.execSQL(tablaPrendas);
+    }
+
+    public void borrarRopa(){
+        SQLiteDatabase sqLiteDatabase = getWritableDatabase();
+        sqLiteDatabase.execSQL("DROP TABLE IF EXISTS "+ropa);
+        sqLiteDatabase.execSQL(tablaRopa);
+    }
+
+    public void borrarLugares(){
+        SQLiteDatabase sqLiteDatabase = getWritableDatabase();
+        sqLiteDatabase.execSQL("DROP TABLE IF EXISTS "+lugares);
+        sqLiteDatabase.execSQL(tablaLugares);
+    }
+
+
 
 
     //INSERTAR************************************
@@ -676,7 +725,6 @@ public class SQLCobrale  extends SQLiteOpenHelper{
     public void actualizarSincronizado(Integer id, String tabla,Context context){
         SQLiteDatabase db = getWritableDatabase();
         String campo = obtenerCampo(tabla);
-        Log.d(TAG, "actualizarSincronizado: "+campo);
         ContentValues sincronizar = new ContentValues();
         sincronizar.put("sincronizado",1);
         try{
@@ -685,6 +733,130 @@ public class SQLCobrale  extends SQLiteOpenHelper{
             Toast.makeText(context, "Error al sincronizar: "+ex.getMessage(), Toast.LENGTH_SHORT).show();
         }
     }
+
+    //SINCRONIZADO
+
+    public void insertarClientesNube(ArrayList<cliente> clientes, Context context){
+        SQLiteDatabase db = getWritableDatabase();
+        for (cliente persona : clientes) {
+            ContentValues nuevoCliente = new ContentValues();
+            nuevoCliente.put("nombre", persona.getNombre());
+            nuevoCliente.put("calle", persona.getCalle());
+            nuevoCliente.put("colonia", persona.getColonia());
+            nuevoCliente.put("telefono1", persona.getTelefono1());
+            nuevoCliente.put("telefono2", persona.getTelefono2());
+            nuevoCliente.put("razonSocial", persona.getRazonSocial());
+            nuevoCliente.put("activo", persona.isActivo());
+            nuevoCliente.put("razonSocial", persona.getRazonSocial());
+            nuevoCliente.put("sincronizado", persona.isSincronizado());
+            try {
+                db.insertOrThrow(clienteT, null, nuevoCliente);
+            } catch (SQLiteException ex) {
+                Log.d(TAG, "ERROR AL INSERTAR " + ex.getMessage());
+                Toast.makeText(context, "No se insertó el cliente: "+ ex.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        }
+        db.close();
+
+    }
+
+    public void insertarLugaresNube(ArrayList<lugarRopa> aLugares, Context context){
+        SQLiteDatabase db = getWritableDatabase();
+        for (lugarRopa lugar : aLugares) {
+            ContentValues places = new ContentValues();
+            places.put("idLugar", lugar.getId());
+            places.put("nombre", lugar.getNombre());
+            places.put("sincronizado", lugar.isSincronizado());
+            try {
+                db.insertOrThrow(lugares, null, places);
+            } catch (SQLiteException ex) {
+                Log.d(TAG, "PROBLEMA AL INSERTAR EL LUGAR: " + ex.getMessage());
+            }
+        }
+        db.close();
+    }
+
+    public void insertarPagosNube(ArrayList<pagos> pagos, Context context){
+        SQLiteDatabase db = getWritableDatabase();
+        for (pagos pay : pagos) {
+            ContentValues p = new ContentValues();
+            p.put("idPago", pay.getId());
+            p.put("monto", pay.getMonto());
+            p.put("resto", pay.getResto());
+            p.put("total", pay.getTotal());
+            p.put("fechaCobro", pay.getFechaCobro());
+            p.put("fechaPago", pay.getFechaPago());
+            p.put("activo", pay.isActivo());
+            p.put("sincronizado", pay.isSincronizado());
+            try {
+                db.insertOrThrow(pago, null, p);
+            } catch (SQLiteException ex) {
+                Toast.makeText(context, "No se pudo insertar el pago:"+ ex.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        }
+        db.close();
+    }
+
+    public void insertarPrendasNube(ArrayList<prendas> aPrendas, Context context){
+        SQLiteDatabase db = getWritableDatabase();
+        for (prendas prenda : aPrendas){
+            ContentValues p = new ContentValues();
+            p.put("id", prenda.getIdNube());
+            p.put("idProducto", prenda.getIdPrenda());
+            p.put("descripccion", prenda.getDescripccion());
+            p.put("tipoPrenda", prenda.getTipoPrenda());
+            p.put("costo", prenda.getCosto());
+            p.put("cantidad", prenda.getCantidad());
+            p.put("sincronizado", true);
+            try{
+                db.insertOrThrow(this.prenda, null, p);
+            }catch (SQLiteException ex) {
+                Toast.makeText(context, "No se insertaron las prendas: "+ex.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
+
+    public void insertarRopaNube(ArrayList<lugarRopa> aRopa, Context context){
+        SQLiteDatabase db = getWritableDatabase();
+        for (lugarRopa ropa : aRopa){
+            ContentValues r = new ContentValues();
+            r.put("idRopa", ropa.getId());
+            r.put("nombre", ropa.getNombre());
+            r.put("sincronizado", true);
+            try{
+                db.insertOrThrow(this.ropa, null, r);
+            }catch (SQLiteException ex){
+                Toast.makeText(context, "No se insertó la ropa: "+ ex.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+
+        }
+
+    }
+
+    public void insertarVentasNube(ArrayList<ventas> aVentas, Context context){
+        SQLiteDatabase db = getWritableDatabase();
+        for (ventas venta : aVentas){
+            ContentValues v = new ContentValues();
+            v.put("idVenta", venta.getIdVenta());
+            v.put("idCliente", venta.getIdCliente());
+            v.put("idProductos", venta.getIdProductos());
+            v.put("idPagos", venta.getIdPagos());
+            v.put("fechaVenta", venta.getFechaVenta());
+            v.put("prendasTotal", venta.getPrendasTotal());
+            v.put("total", venta.getTotal());
+            v.put("diaSemana", venta.getDiaSemana());
+            v.put("plazo", venta.getPlazo());
+            v.put("pagado", venta.isPagado());
+            v.put("sincronizado", true);
+            try{
+                db.insertOrThrow(this.venta, null, v);
+                Log.d(TAG, "SE INSERTÓ LA VENTA ");
+            }catch (SQLiteException ex){
+                Toast.makeText(context, "No se insertaron las ventas: "+ ex.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
+
 
     private String obtenerCampo(String tabla){
         String campo = "";

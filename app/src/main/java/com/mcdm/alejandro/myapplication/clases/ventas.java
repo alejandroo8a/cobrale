@@ -17,6 +17,7 @@ public class ventas {
     private boolean pagado;
     private boolean sincronizado;
 
+
     public ventas(){
 
     }

@@ -1,14 +1,18 @@
 package com.mcdm.alejandro.myapplication.SQLite;
 
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.google.firebase.database.ChildEventListener;
+import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.mcdm.alejandro.myapplication.R;
 import com.mcdm.alejandro.myapplication.clases.cliente;
 import com.mcdm.alejandro.myapplication.clases.conexion;
@@ -17,7 +21,11 @@ import com.mcdm.alejandro.myapplication.clases.pagos;
 import com.mcdm.alejandro.myapplication.clases.prendas;
 import com.mcdm.alejandro.myapplication.clases.ventas;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Hashtable;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by alejandro on 14/01/17.
@@ -30,6 +38,7 @@ public class firebase {
     DatabaseReference myRef;
     Context context;
     String avisoRespaldo = "Se respaldó:\n ";
+    ProgressDialog anillo = null;
 
     public firebase(){
     }
@@ -158,6 +167,141 @@ public class firebase {
         }
     }
 
+
+    //Obtencion de firebase
+    public void obtenerBaseNube(){
+        mostrarCargandoAnillo();
+        db.borrarDatos();
+        obtenerClientes();
+    }
+
+    private void obtenerClientes(){
+        myRef = fb.getReference("cliente");
+        myRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                ArrayList<cliente> clientes = new ArrayList<cliente>();
+                for (DataSnapshot ds : dataSnapshot.getChildren()){
+                    cliente cliente = ds.getValue(cliente.class);
+                    clientes.add(cliente);
+                }
+                db.borrarClientes();
+                db.insertarClientesNube(clientes, context);
+                obtenerLugar();
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                System.out.println("The read failed: " + databaseError.getCode());
+            }
+        });
+    }
+
+    private void obtenerLugar(){
+        myRef = fb.getReference("lugar");
+        myRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                ArrayList<lugarRopa> lugares = new ArrayList<lugarRopa>();
+                for(DataSnapshot ds : dataSnapshot.getChildren()){
+                    lugarRopa lugar = ds.getValue(lugarRopa.class);
+                    lugares.add(lugar);
+                }
+                db.insertarLugaresNube(lugares, context);
+                obtenerPagos();
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+    }
+
+    private void obtenerPagos(){
+        myRef = fb.getReference("pagos");
+        myRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                ArrayList<pagos> pagos = new ArrayList<pagos>();
+                for(DataSnapshot ds : dataSnapshot.getChildren()){
+                    pagos pago = ds.getValue(pagos.class);
+                    pagos.add(pago);
+                }
+                db.insertarPagosNube(pagos, context);
+                obtenerPrendas();
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+    }
+
+    private void obtenerPrendas(){
+        myRef = fb.getReference("prendas");
+        myRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                ArrayList<prendas> clothes = new ArrayList<prendas>();
+                for (DataSnapshot ds : dataSnapshot.getChildren()){
+                    prendas pre = ds.getValue(prendas.class);
+                    clothes.add(pre);
+                }
+                db.insertarPrendasNube(clothes, context);
+                obtenerRopa();
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+    }
+
+    private void obtenerRopa(){
+        myRef = fb.getReference("ropa");
+        myRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                ArrayList<lugarRopa> clothes = new ArrayList<lugarRopa>();
+                for (DataSnapshot ds : dataSnapshot.getChildren()){
+                    lugarRopa pre = ds.getValue(lugarRopa.class);
+                    clothes.add(pre);
+                }
+                db.insertarRopaNube(clothes, context);
+                obtenerVentas();
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+    }
+
+    private void obtenerVentas(){
+        myRef = fb.getReference("ventas");
+        myRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                ArrayList<ventas> aVentas = new ArrayList<ventas>();
+                for (DataSnapshot ds : dataSnapshot.getChildren()){
+                    ventas pre = ds.getValue(ventas.class);
+                    aVentas.add(pre);
+                }
+                db.insertarVentasNube(aVentas, context);
+                ocultarCargandoAnillo();
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+    }
+
     private void avisoResultadosRespaldo(){
         if(avisoRespaldo.equals("Se respaldó:\n "))
             avisoRespaldo = "Sus datos estan totalmente respaldados.";
@@ -173,6 +317,7 @@ public class firebase {
                 })
                 .show();
     }
+
 
     private void avisoNoRed(){
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
@@ -200,6 +345,14 @@ public class firebase {
                     }
                 })
                 .show();
+    }
+
+    private void mostrarCargandoAnillo(){
+        this.anillo = ProgressDialog.show(context, "Obteniendo datos", "Cargando...", true, true);
+    }
+
+    private void ocultarCargandoAnillo(){
+        this.anillo.dismiss();
     }
 }
 

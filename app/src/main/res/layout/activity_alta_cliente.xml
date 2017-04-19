@@ -110,17 +110,17 @@
 
     <Button
         android:id="@+id/btnVenta"
-        android:layout_gravity="center"
-        android:layout_marginTop="20dp"
-        android:background="@drawable/buttom_round_comprar"
         android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
         android:layout_marginLeft="20dp"
         android:layout_marginRight="20dp"
+        android:layout_marginTop="20dp"
+        android:background="@drawable/buttom_round_comprar"
+        android:onClick="hacerVenta"
         android:text="Vender"
         android:textColor="#FFFFFF"
-        android:textSize="20dp"
-        android:onClick="hacerVenta"
-        android:layout_height="wrap_content" />
+        android:textSize="20dp" />
 
     <Button
         android:id="@+id/btnGuardar"
