@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <ImageView
+        android:id="@+id/imgDeben"
+        android:layout_marginTop="10dp"
+        android:layout_marginLeft="10dp"
+        android:src="@drawable/ic_account"
+        android:layout_width="48dp"
+        android:layout_height="48dp" />
+    <TextView
+        android:id="@+id/txtNombreDeben"
+        android:layout_marginTop="10dp"
+        android:layout_marginLeft="70dp"
+        android:textSize="23dp"
+        android:maxLength="20"
+        android:text="Alejandro Ochoa"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+    <TextView
+        android:id="@+id/txtFechaDeben"
+        android:layout_marginTop="35dp"
+        android:layout_marginLeft="70dp"
+        android:textSize="21dp"
+        android:text="Fecha a cobrar:"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+    <TextView
+        android:id="@+id/txtResto"
+        android:textSize="30dp"
+        android:text="$ 1299.0"
+        android:layout_marginTop="15dp"
+        android:layout_marginRight="15dp"
+        android:layout_alignParentEnd="true"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+
+
+
+</RelativeLayout>

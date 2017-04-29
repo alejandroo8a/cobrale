@@ -1,0 +1,37 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context="com.mcdm.alejandro.myapplication.configuracion">
+
+    <!-- TODO: Update blank fragment layout -->
+    <Button
+        android:text="Respaldar"
+        android:textSize="20dp"
+        android:textColor="#FFFFFF"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="150dp"
+        android:background="@drawable/buttom_round"
+        android:layout_width="200dp"
+        android:layout_height="100dp"
+        android:id="@+id/btnRespaldar" />
+
+    <Button
+        android:id="@+id/btnSincronizar"
+        android:text="Sincronizar"
+        android:textSize="20dp"
+        android:textColor="#FFFFFF"
+        android:background="@drawable/buttom_round_comprar"
+        android:layout_width="200dp"
+        android:layout_height="100dp"
+        android:layout_below="@+id/btnRespaldar"
+        android:layout_alignStart="@+id/btnRespaldar"
+        android:layout_marginTop="40dp" />
+
+
+
+
+
+
+</RelativeLayout>

@@ -1,0 +1,22 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.mcdm.alejandro.myapplication.deben">
+
+    <!-- TODO: Update blank fragment layout -->
+    <GridView
+        android:id="@+id/grdDeben"
+        android:layout_marginTop="75dp"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"></GridView>
+    <TextView
+        android:id="@+id/txtDeben"
+        android:textSize="35dp"
+        android:text="Nadie debe"
+        android:layout_gravity="center"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+
+</FrameLayout>

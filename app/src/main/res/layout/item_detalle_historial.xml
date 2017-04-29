@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="230dp">
+
+    <ImageView
+        android:src="@drawable/im_fondohistorial"
+        android:layout_width="match_parent"
+        android:scaleType="center"
+        android:layout_marginTop="5dp"
+        android:layout_marginLeft="5dp"
+        android:layout_marginRight="5dp"
+        android:layout_height="230dp" />
+
+    <TextView
+        android:id="@+id/txtTipoPrendaCard"
+        android:text="Tipo de prenda."
+        android:textSize="20dp"
+        android:textColor="@android:color/white"
+        android:layout_marginTop="10dp"
+        android:layout_marginLeft="10dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+    <EditText
+        android:id="@+id/edtTipoPrendaCard"
+        android:textSize="20dp"
+        android:hint="AgregaTipo de prenda"
+        android:layout_marginLeft="10dp"
+        android:singleLine="true"
+        android:textColor="@android:color/white"
+        android:layout_marginRight="10dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toEndOf="@+id/txtTipoPrendaCard" />
+
+    <TextView
+        android:id="@+id/txtDescripcionCard"
+        android:text="Descripción."
+        android:textSize="20dp"
+        android:textColor="@android:color/white"
+        android:layout_marginTop="55dp"
+        android:layout_marginLeft="10dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+    <EditText
+        android:id="@+id/edtDescripcionCard"
+        android:textSize="20dp"
+        android:hint="Sin descripción"
+        android:singleLine="true"
+        android:textColor="@android:color/white"
+        android:layout_marginTop="40dp"
+        android:layout_marginLeft="10dp"
+        android:layout_width="wrap_content"
+        android:layout_marginRight="10dp"
+        android:layout_toEndOf="@id/txtTipoPrendaCard"
+        android:layout_height="wrap_content" />
+
+    <TextView
+        android:id="@+id/txtCantidadCard"
+        android:text="Cantidad."
+        android:textSize="20dp"
+        android:textColor="@android:color/white"
+        android:layout_marginTop="100dp"
+        android:layout_marginLeft="10dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+    <EditText
+        android:id="@+id/edtCantidadCard"
+        android:textSize="20dp"
+        android:hint="1"
+        android:singleLine="true"
+        android:layout_marginLeft="10dp"
+        android:layout_width="70dp"
+        android:textColor="@android:color/white"
+        android:textAlignment="center"
+        android:layout_marginTop="85dp"
+        android:layout_toEndOf="@id/txtTipoPrendaCard"
+        android:inputType="number"
+        android:layout_height="wrap_content" />
+
+    <TextView
+        android:id="@+id/txtCostoCard"
+        android:text="Costo."
+        android:textColor="@android:color/white"
+        android:textSize="20dp"
+        android:layout_marginTop="150dp"
+        android:layout_marginLeft="10dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+    <EditText
+        android:id="@+id/edtCostoCard"
+        android:textSize="20dp"
+        android:hint="1"
+        android:textColor="@android:color/white"
+        android:layout_marginTop="135dp"
+        android:singleLine="true"
+        android:layout_toEndOf="@id/txtTipoPrendaCard"
+        android:layout_marginLeft="10dp"
+        android:layout_width="70dp"
+        android:textAlignment="center"
+        android:inputType="numberDecimal"
+        android:layout_height="wrap_content" />
+    <Button
+        android:id="@+id/btnModificarHistorial"
+        android:text="Modificar"
+        android:layout_marginRight="15dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_toEndOf="@+id/txtCantidadCard" />
+    <Button
+        android:id="@+id/btnEliminarPrenda"
+        android:text="Eliminar"
+        android:layout_alignParentBottom="true"
+        android:layout_toRightOf="@+id/btnModificarHistorial"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+
+</RelativeLayout>

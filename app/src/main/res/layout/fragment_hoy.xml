@@ -1,0 +1,30 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#FFFFFF"
+    tools:context="com.mcdm.alejandro.myapplication.hoy">
+
+    <!-- TODO: Update blank fragment layout -->
+    <GridView
+        android:id="@+id/grdCobrarHoy"
+        android:layout_marginTop="80dp"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"></GridView>
+    <ImageView
+        android:id="@+id/imgDescanso"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/ic_descanso"
+        android:layout_gravity="center"
+        />
+    <TextView
+        android:id="@+id/txtNoHayCobrar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="No hay nadie por cobrar."
+        android:layout_gravity="center"
+        android:layout_marginTop="80dp"
+        />
+
+</FrameLayout>
