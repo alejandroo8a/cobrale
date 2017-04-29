@@ -1,7 +1,9 @@
 package com.mcdm.alejandro.myapplication;
 
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.annotation.Nullable;
@@ -47,10 +49,24 @@ public class configuracion extends Fragment {
         btnSincronizar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                fb.obtenerBaseNube();
+                alertaRespaldo();
             }
         });
 
+    }
+
+    private void alertaRespaldo(){
+        AlertDialog.Builder alerta = new AlertDialog.Builder(getContext());
+        alerta.setTitle("ATENCIÓN")
+                .setMessage("Se borrarán todos los datos, ¿está seguro de sincronizar?")
+                .setPositiveButton("ACEPTAR", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        fb.obtenerBaseNube();
+                    }
+                })
+                .setNegativeButton("CANCELAR", null)
+                .show();
     }
 
     @Override

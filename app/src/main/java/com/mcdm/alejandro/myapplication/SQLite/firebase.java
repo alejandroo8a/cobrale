@@ -4,6 +4,8 @@ import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -170,14 +172,23 @@ public class firebase {
 
     //Obtencion de firebase
     public void obtenerBaseNube(){
-        mostrarCargandoAnillo();
-        db.borrarDatos();
-        obtenerClientes();
+        conexion conexion = new conexion();
+        if(conexion.isAvaliable(context)){
+            if(conexion.isOnline()){
+                mostrarCargandoAnillo();
+                db.borrarDatos();
+                obtenerClientes();
+            }else
+                avisoNoConexion();
+
+        }else
+            avisoNoRed();
+
     }
 
     private void obtenerClientes(){
         myRef = fb.getReference("cliente");
-        myRef.addValueEventListener(new ValueEventListener() {
+        myRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 ArrayList<cliente> clientes = new ArrayList<cliente>();
@@ -199,7 +210,7 @@ public class firebase {
 
     private void obtenerLugar(){
         myRef = fb.getReference("lugar");
-        myRef.addValueEventListener(new ValueEventListener() {
+        myRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 ArrayList<lugarRopa> lugares = new ArrayList<lugarRopa>();
@@ -220,14 +231,17 @@ public class firebase {
 
     private void obtenerPagos(){
         myRef = fb.getReference("pagos");
-        myRef.addValueEventListener(new ValueEventListener() {
+        myRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
+                int contador = -1;
                 ArrayList<pagos> pagos = new ArrayList<pagos>();
                 for(DataSnapshot ds : dataSnapshot.getChildren()){
                     pagos pago = ds.getValue(pagos.class);
                     pagos.add(pago);
+                    contador++;
                 }
+                guardarIDPago(pagos.get(contador).getId());
                 db.insertarPagosNube(pagos, context);
                 obtenerPrendas();
             }
@@ -241,14 +255,17 @@ public class firebase {
 
     private void obtenerPrendas(){
         myRef = fb.getReference("prendas");
-        myRef.addValueEventListener(new ValueEventListener() {
+        myRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
+                int cuenta = -1;
                 ArrayList<prendas> clothes = new ArrayList<prendas>();
                 for (DataSnapshot ds : dataSnapshot.getChildren()){
                     prendas pre = ds.getValue(prendas.class);
                     clothes.add(pre);
+                    cuenta++;
                 }
+                guardarIDProducto(clothes.get(cuenta).getIdPrenda());
                 db.insertarPrendasNube(clothes, context);
                 obtenerRopa();
             }
@@ -262,7 +279,7 @@ public class firebase {
 
     private void obtenerRopa(){
         myRef = fb.getReference("ropa");
-        myRef.addValueEventListener(new ValueEventListener() {
+        myRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 ArrayList<lugarRopa> clothes = new ArrayList<lugarRopa>();
@@ -283,7 +300,7 @@ public class firebase {
 
     private void obtenerVentas(){
         myRef = fb.getReference("ventas");
-        myRef.addValueEventListener(new ValueEventListener() {
+        myRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 ArrayList<ventas> aVentas = new ArrayList<ventas>();
@@ -293,6 +310,7 @@ public class firebase {
                 }
                 db.insertarVentasNube(aVentas, context);
                 ocultarCargandoAnillo();
+                avisoResultadoSincronizado();
             }
 
             @Override
@@ -302,12 +320,42 @@ public class firebase {
         });
     }
 
+    private void guardarIDProducto(int idProducto){
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        Log.d(TAG, "guardarIDProducto: "+idProducto);
+        editor.putInt("IDPRODUCTO",idProducto);
+        editor.commit();
+    }
+
+    private void guardarIDPago(int idPago){
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        Log.d(TAG, "guardarIDPago: "+idPago);
+        editor.putInt("IDPAGO",idPago);
+        editor.commit();
+    }
+
     private void avisoResultadosRespaldo(){
         if(avisoRespaldo.equals("Se respaldó:\n "))
             avisoRespaldo = "Sus datos estan totalmente respaldados.";
         AlertDialog.Builder alert = new AlertDialog.Builder(context);
         alert.setTitle("Resultado de respaldo")
                 .setMessage(avisoRespaldo)
+                .setIcon(R.drawable.ic_backup)
+                .setPositiveButton("ACEPTAR", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+
+                    }
+                })
+                .show();
+    }
+
+    private void avisoResultadoSincronizado(){
+        AlertDialog.Builder alert = new AlertDialog.Builder(context);
+        alert.setTitle("ÉXITO")
+                .setMessage("La sincronización fue correcta")
                 .setIcon(R.drawable.ic_backup)
                 .setPositiveButton("ACEPTAR", new DialogInterface.OnClickListener() {
                     @Override

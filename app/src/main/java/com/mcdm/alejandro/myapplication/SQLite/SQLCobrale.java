@@ -51,7 +51,7 @@ public class SQLCobrale  extends SQLiteOpenHelper{
     private static String tablaPagos = "CREATE TABLE pagos(idPago INTEGER, monto REAL, resto REAL, total REAL, fechaCobro TEXT, fechaPago TEXT, activo BOOLEAN, sincronizado BOOLEAN)";
     private static String tablaPrendas = "CREATE TABLE prendas(id INTEGER PRIMARY KEY AUTOINCREMENT,idProducto INTEGER, descripccion TEXT, tipoPrenda TEXT, costo REAL, cantidad REAL, sincronizado BOOLEAN)";
     private static String tablaRopa = "CREATE TABLE ropa(idRopa INTEGER PRIMARY KEY AUTOINCREMENT, nombre TEXT, sincronizado BOOLEAN)";
-    private static String tablaLugares =  "CREATE TABLE lugar(idLugar, nombre TEXT, sincronizado BOOLEAN)";
+    private static String tablaLugares =  "CREATE TABLE lugar(idLugar INTEGER PRIMARY KEY AUTOINCREMENT, nombre TEXT, sincronizado BOOLEAN)";
 
     //NOMBRE DE TABLAS
     final String clienteT = "cliente";
@@ -461,6 +461,26 @@ public class SQLCobrale  extends SQLiteOpenHelper{
         return listaDeben;
     }
 
+    public int getDebenHoyCantidad() {
+        int cantidad = 0;
+        String fecha ="";
+        SQLiteDatabase db = getWritableDatabase();
+        SimpleDateFormat format = new SimpleDateFormat("yyyy/MM/dd");
+        Calendar calendar = Calendar.getInstance();
+        calendar.add(Calendar.DAY_OF_YEAR, 1);
+        fecha = format.format(calendar.getTime());
+        Cursor cursor = db.rawQuery("SELECT "+clienteT+".nombre, "+pago+".resto, "+pago+".fechaCobro, "+pago+".idPago,"+pago+".total FROM "+pago+
+                " INNER JOIN "+ venta +" ON "+pago+ ".idPago = "+venta+".idPagos"+
+                " INNER JOIN "+ clienteT +" ON "+ venta + ".idCliente = "+clienteT +".idCliente"+
+                " WHERE pagos.fechaCobro >= '2000/01/01' AND pagos.fechaCobro <= '"+fecha+"' AND "+venta+ ".pagado = 0 AND "+pago+".activo = 1",null);
+        if(cursor.moveToFirst()){
+            do {
+                cantidad++;
+            }while (cursor.moveToNext());
+        }
+        return cantidad;
+    }
+
     public List<String> getRopa(){
         SQLiteDatabase db = getWritableDatabase();
         List<String> listaRopa = new ArrayList<>();
@@ -850,7 +870,6 @@ public class SQLCobrale  extends SQLiteOpenHelper{
             v.put("sincronizado", true);
             try{
                 db.insertOrThrow(this.venta, null, v);
-                Log.d(TAG, "SE INSERTÓ LA VENTA ");
             }catch (SQLiteException ex){
                 Toast.makeText(context, "No se insertaron las ventas: "+ ex.getMessage(), Toast.LENGTH_SHORT).show();
             }
